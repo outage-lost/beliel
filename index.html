@@ -30,13 +30,13 @@
       <section id="menu-screen" class="screen menu-screen is-hidden" aria-label="Menú principal">
         <div class="menu-copy"><p class="eyebrow">Una pequeña aventura hecha para ti</p><h1>Milena, hoy<br /><em>cumples 20.</em></h1><p class="intro">Un día para celebrar todo lo que eres, todo lo que has crecido y todo lo bonito que todavía te espera.</p></div>
         <div class="menu-characters" aria-hidden="true"><img class="mil-static" src="recursos-visuales/avatar-mil-de-pie-fijo-removebg-preview.png" alt="" /><img class="beliel" src="recursos-visuales/beliel-removebg-preview.png" alt="" /></div>
-        <div class="menu-actions"><button id="start-button" class="image-button" aria-label="Comenzar la aventura"><img src="recursos-visuales/boton-de-inicio.png" alt="Comenzar" /></button><button id="replay-dialogue" class="text-button">Ver mensajes de nuevo <span>↗</span></button></div>
+        <div class="menu-actions"><button id="start-button" class="image-button" aria-label="Comenzar la aventura"><img src="recursos-visuales/boton-de-inicio.png" alt="Comenzar" /></button><button id="replay-dialogue" class="text-button">Ver mensaje <span>↗</span></button></div>
         <p class="menu-note">Hecho con cariño · 21 de julio de 2026</p>
       </section>
 
       <section id="game-screen" class="screen game-screen is-hidden" aria-label="Aventura de Milena">
         <div class="game-hud"><div class="hud-pill"><span class="hud-label">PUNTOS</span><strong id="score">00000</strong></div><div id="bonus-indicator" class="hud-pill bonus-pill is-hidden"><span class="hud-label">BONUS</span><strong>×2 <small id="bonus-time">5s</small></strong></div><div class="hud-pill high"><span class="hud-label">RÉCORD</span><strong id="high-score">00000</strong></div></div>
-        <canvas id="game-canvas" aria-label="Minijuego: salta los obstáculos"></canvas>
+        <canvas id="game-canvas" aria-label="Minijuego: salta los obstáculos"></canvas><img id="player-sprite" class="player-sprite is-hidden" src="recursos-visuales/output-onlinegiftools.gif" alt="Mil corriendo" draggable="false" />
         <div class="game-tip">Espacio / ↑ / toca para saltar</div>
         <div id="game-over" class="game-over is-hidden"><p class="eyebrow">La aventura se detuvo</p><h2>¡Casi lo logras!</h2><p>Tu puntuación: <strong id="final-score">0</strong></p><p>Tu récord: <strong id="final-high-score">0</strong></p><div class="overlay-actions"><button id="restart-button" class="solid-button">Reiniciar</button><button id="menu-button" class="ghost-button">Volver al menú</button></div></div>
       </section>
