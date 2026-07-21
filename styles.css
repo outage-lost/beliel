@@ -15,4 +15,7 @@
 @keyframes bonus-pulse{50%{transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,75,67,.26)}}
 .player-sprite{position:absolute;z-index:4;display:block;pointer-events:none;object-fit:fill;image-rendering:auto}.player-sprite.is-hidden{display:none}
 @media (max-width:800px){.menu-copy{max-width:100%;padding-top:.25rem}.menu-copy h1{font-size:clamp(3rem,14vw,5rem)}.menu-copy .intro{font-size:.92rem;line-height:1.45;margin-top:1rem;max-width:32ch}.menu-characters{height:min(29vh,225px);margin-top:-.25rem}.menu-actions{margin-top:-.2rem}}
+.game-screen:before{background:url('recursos-visuales/paisaje-de-fondo-carrusel-secuencial.png?v=20260721-new') center bottom/cover}
+.mirror-pill{background:rgba(255,250,240,.96);border:1px solid var(--clay);color:var(--clay);animation:mirror-pulse 1.2s ease-in-out infinite}.mirror-pill .hud-label,.mirror-pill strong{color:var(--clay)}.mirror-pill small{font:600 .75em 'DM Sans',system-ui,sans-serif}.game-hud .mirror-pill.is-hidden{display:none}.game-screen.mirror-mode:before{transform:scaleX(-1) scale(1.04)}.game-screen.mirror-mode #game-canvas,.game-screen.mirror-mode .player-sprite{transform:scaleX(-1)}
+@keyframes mirror-pulse{50%{opacity:.62}}
 @media (prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
