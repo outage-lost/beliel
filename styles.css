@@ -9,4 +9,8 @@
 .text-button{color:var(--white);background:rgba(48,77,60,.88);border:1px solid rgba(255,250,240,.8);border-radius:999px;padding:.7rem 1rem;box-shadow:0 8px 20px rgba(48,77,60,.16)}
 .text-button span{color:var(--oat)}
 @media (max-width:520px){.dialogue-screen{padding:.9rem}.dialogue-stage{grid-template-columns:78px 1fr;gap:.55rem}.npc-wrap{height:205px}.dialogue-card{padding:1rem;min-height:270px;border-radius:18px 18px 18px 5px}.dialogue-card p{font-size:1.08rem;line-height:1.2}.dialogue-footer{font-size:.64rem}.continue-hint{white-space:nowrap}.game-hud{top:.8rem;left:.8rem;right:.8rem}.hud-pill{min-width:88px;padding:.55rem .7rem}.hud-pill strong{font-size:1rem}.game-tip{bottom:.65rem}}
+.dialogue-card .repo-link{color:var(--clay);font-family:'DM Sans',system-ui,sans-serif;font-size:.72em;font-weight:700;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px;white-space:nowrap}
+.dialogue-card .repo-link:hover{color:var(--forest)}
+.bonus-pill{background:rgba(255,250,240,.96);border:1px solid #c84b43;color:#b63e38;animation:bonus-pulse 1s ease-in-out infinite}.bonus-pill .hud-label,.bonus-pill strong{color:#b63e38}.bonus-pill small{font:600 .7em 'DM Sans',system-ui,sans-serif}.game-hud .bonus-pill.is-hidden{display:none}
+@keyframes bonus-pulse{50%{transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,75,67,.26)}}
 @media (prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
