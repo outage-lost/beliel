@@ -35,3 +35,8 @@ html,body{font-family:'DM Sans',system-ui,sans-serif}
 .dialogue-home-button{background:var(--forest);color:var(--white)}
 @media (max-width:800px){.dialogue-card p{font-size:clamp(1.18rem,4.7vw,1.6rem)}.dialogue-actions{justify-content:stretch}.dialogue-button{flex:1}}
 @media (max-width:520px){.dialogue-card{border-radius:18px 18px 18px 5px}.dialogue-card p{font-size:1.08rem;line-height:1.2}.dialogue-actions{gap:.4rem}.dialogue-button{padding:.5rem .45rem;font-size:.62rem}}
+.dialogue-screen{cursor:default;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.dialogue-card{cursor:pointer;touch-action:manipulation}
+.dialogue-actions,.dialogue-button{cursor:default}
+.dialogue-button{cursor:pointer;min-height:2.35rem;box-shadow:0 3px 0 rgba(48,77,60,.18);transition:background-color .2s ease,color .2s ease,transform .2s ease,box-shadow .2s ease}
+.dialogue-button:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(48,77,60,.18)}

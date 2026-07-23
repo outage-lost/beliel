@@ -24,6 +24,6 @@ Visita `http://localhost:8080`. En Dockploy, publica el puerto del contenedor `8
 ## Estructura
 
 - `index.html`: pantallas, controles y contenido accesible.
-- `styles.css`: estilos, animaciones y tratamiento visual pixel art de los globos.
+- `styles.css`: estilos, animaciones y componentes de la interfaz.
 - `app.js`: navegación de diálogos, persistencia y lógica del minijuego.
 - `recursos-visuales/`: sprites, fondos y elementos gráficos.
