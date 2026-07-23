@@ -13,9 +13,9 @@
   function renderDialogue(){ const text=$('dialogue-text'); text.textContent=dialogues[dialogueIndex]; $('dialogue-count').textContent=`${String(dialogueIndex+1).padStart(2,'0')} / ${dialogues.length}`; }
   function advanceDialogue(){if(dialogueIndex < dialogues.length-1){dialogueIndex++;renderDialogue();}else{localStorage.setItem('milena-dialogue-seen','1');showScreen('menu');}}
   function startDialogue(){dialogueIndex=0;renderDialogue();showScreen('dialogue');}
-  $('dialogue-card').addEventListener('click', e=>{if(e.target.closest('.dialogue-actions'))return;advanceDialogue();}); document.addEventListener('keydown', e=>{if((e.key===' '||e.key==='Enter')&&!screens.dialogue.classList.contains('is-hidden')){if(e.target.closest('.dialogue-button'))return;e.preventDefault();advanceDialogue();}else if((e.key===' '||e.key==='ArrowUp')&&!screens.game.classList.contains('is-hidden')){e.preventDefault();runner.jump();}});
-  $('dialogue-home').addEventListener('click', e=>{e.stopPropagation();showScreen('menu');});
-  $('dialogue-hide').addEventListener('click', e=>{e.stopPropagation();localStorage.setItem('milena-dialogue-hidden','1');showScreen('menu');});
+  $('dialogue-card').addEventListener('click', e=>{if(e.target.closest('button'))return;advanceDialogue();}); document.addEventListener('keydown', e=>{if((e.key===' '||e.key==='Enter')&&!screens.dialogue.classList.contains('is-hidden')){if(e.target.closest('.dialogue-button'))return;e.preventDefault();advanceDialogue();}else if((e.key===' '||e.key==='ArrowUp')&&!screens.game.classList.contains('is-hidden')){e.preventDefault();runner.jump();}});
+  $('dialogue-home').addEventListener('click', e=>{e.preventDefault();e.stopPropagation();showScreen('menu');});
+  $('dialogue-hide').addEventListener('click', e=>{e.preventDefault();e.stopPropagation();localStorage.setItem('milena-dialogue-hidden','1');showScreen('menu');});
   $('replay-dialogue').addEventListener('click', e=>{e.stopPropagation();startDialogue();}); $('start-button').addEventListener('click', ()=>{showScreen('game');runner.start();}); $('restart-button').addEventListener('click', ()=>runner.start()); $('menu-button').addEventListener('click', ()=>{runner.stop();showScreen('menu');});
 
   const canvas=$('game-canvas'), ctx=canvas.getContext('2d'), playerElement=$('player-sprite'); let W=0,H=0,dpr=1;

@@ -40,3 +40,7 @@ html,body{font-family:'DM Sans',system-ui,sans-serif}
 .dialogue-actions,.dialogue-button{cursor:default}
 .dialogue-button{cursor:pointer;min-height:2.35rem;box-shadow:0 3px 0 rgba(48,77,60,.18);transition:background-color .2s ease,color .2s ease,transform .2s ease,box-shadow .2s ease}
 .dialogue-button:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(48,77,60,.18)}
+.dialogue-actions{position:relative;z-index:4;pointer-events:auto}
+.dialogue-button{display:inline-flex;align-items:center;justify-content:center;min-width:9.5rem;border:0;background:var(--forest);color:var(--white);font-family:'DM Sans',system-ui,sans-serif;font-size:.76rem;line-height:1.2;letter-spacing:.01em;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+.dialogue-button:hover,.dialogue-button:focus-visible{background:var(--clay);color:var(--white);outline:2px solid var(--white);outline-offset:2px}
+.dialogue-button:active{background:var(--moss);transform:translateY(1px)}
