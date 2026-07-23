@@ -4,39 +4,7 @@
   const dialogues = [
     'Hola.',
     'Feliz cumpleaños. Espero que este sea un muy buen día para ti. Espero que estés rodeada de todas las personas que te quieren y que te aman. De verdad deseo que esta nueva etapa de tu vida esté llena de cosas bonitas.',
-    'También espero que te hayan gustado los girasoles.',
-    'Te deseo lo mejor.',
-    'Y, si me permites pedirte una última cosa, no sigas leyendo lo que viene a continuación si crees que esto puede incomodarte o molestarte. Prefiero que cierres esta página aquí y que no veas los siguientes diálogos.',
-    '...',
-    'No sé si llegarás a ver esto. La verdad construí todo esto porque estaba anotado en mi agenda como un proyecto pendiente. Bueno... este y algunos más. Decidí terminar este porque los demás ya no podría hacerlos. Ya no tendría sentido crearlos si ya no había alguien que los recibiera.',
-    'Quería disculparme por todo lo que pasó. Por todo lo que hice, por todo lo que dije y por todas las veces que te fallé.',
-    'Si te soy sincero, no recuerdo casi nada de los últimos meses, pero creo que está bien así. En parte porque hubo momentos en los que realmente no estaba bien, y en parte porque llevo tanto tiempo trabajando hasta desmayarme del cansancio que siento que los días simplemente pasan sin que me dé cuenta. Estoy agotado. Muy agotado.',
-    'No sé qué pienses de mí ahora. No sé cómo estén las cosas en tu vida. Tampoco espero saberlo. Solo quería dejar esto dicho.',
-    'Quiero pedirte perdón. De verdad.',
-    'No sé por qué hice todo eso si nunca antes me había atrevido. Supongo que siempre hay una primera vez para todo, aunque la mía llegó demasiado tarde. Con el tiempo entendí que gran parte de eso fue un grito desesperado y también el reflejo del enojo que llevaba dentro. Pero nunca fue un enojo hacia ti ni hacia lo que pasó entre nosotros. Estaba enojado conmigo mismo por las decisiones que había tomado, con los errores que cometí y con las consecuencias que hubo.',
-    'La verdad, todavía me da una vergüenza tremenda recordar muchas de esas cosas. Pero no se puede cambiar lo que uno hace. Solo queda aprender a vivir con ello y aceptar las consecuencias de las decisiones que tomó.',
-    'Yo siempre fui consciente de que gran parte de lo que pasó fue culpa mía. Lo sabía mientras estaba ocurriendo. Sabía que estaba haciendo muchas cosas mal. Sabía que necesitabas que estuviera más presente, que te escuchara más, que te dedicara más tiempo. Lo sabía.',
-    'Pero seguí creyendo que primero debía terminar todo lo que estaba construyendo y que después tendría tiempo para arreglar las cosas.',
-    'Pensé que el tiempo me iba a esperar.',
-    'Y no fue así.',
-    'Cuando quise reaccionar, ya era demasiado tarde.',
-    'Me arrepiento de muchas cosas. Me arrepiento de no haber tenido el valor de decir lo que sentía cuando todavía podía hacerlo. Me arrepiento de haber pensado que siempre habría otro día para hablar, otro día para cambiar, otro día para hacer las cosas mejor.',
-    'Nunca llegó ese otro día.',
-    'Durante mucho tiempo estuve tan concentrado en intentar construir un futuro que terminé destruyendo una parte muy importante del presente. Quería conseguir algo grande. Quería ser alguien de quien pudieras sentirte orgullosa. Quería darte un futuro mejor.',
-    'Y en ese intento terminé descuidando precisamente a la persona con la que imaginaba compartirlo.',
-    'Eso es algo que voy a cargar siempre.',
-    'Hoy, sinceramente, agradezco que ya no tengas que cargar con nada de lo que fueron mis decisiones. No te lo merecías. Merecías mucha más tranquilidad de la que yo podía darte en ese momento.',
-    'Esto no lo escribo esperando una respuesta, un perdón o una oportunidad. Tampoco espero cambiar nada.',
-    'Solo quería terminar este proyecto y dejar este último mensaje.',
-    'La verdad ya ni siquiera sé qué día es hoy. Estoy demasiado cansado y muy perdido últimamente. Incluso hay momentos en los que siento que ya no recuerdo muchas cosas de esa etapa de mi vida.',
-    'Pero bueno...',
-    'Creo que ya hablé demasiado.',
-    'Feliz cumpleaños.',
-    'Espero que la vida te trate muy bien, que consigas todo lo que te propongas y que seas muy feliz.',
-    'Quiero que sepas que siempre estuve y siempre estaré orgulloso de ti.',
-    'Por eso sigo trabajando tanto, aunque ya no estés.',
-    'Adiós para siempre.',
-    'De mí para ti.'
+    'También espero que te hayan gustado los girasoles.Te deseo lo mejor.'
   ];
   const $ = (id) => document.getElementById(id);
   const screens = {dialogue: $('dialogue-screen'), menu: $('menu-screen'), game: $('game-screen')};
@@ -48,7 +16,7 @@
   $('dialogue-card').addEventListener('click', e=>{if(e.target.closest('.dialogue-actions'))return;advanceDialogue();}); document.addEventListener('keydown', e=>{if((e.key===' '||e.key==='Enter')&&!screens.dialogue.classList.contains('is-hidden')){if(e.target.closest('.dialogue-button'))return;e.preventDefault();advanceDialogue();}else if((e.key===' '||e.key==='ArrowUp')&&!screens.game.classList.contains('is-hidden')){e.preventDefault();runner.jump();}});
   $('dialogue-home').addEventListener('click', e=>{e.stopPropagation();showScreen('menu');});
   $('dialogue-hide').addEventListener('click', e=>{e.stopPropagation();localStorage.setItem('milena-dialogue-hidden','1');showScreen('menu');});
-  $('replay-dialogue').addEventListener('click', startDialogue); $('start-button').addEventListener('click', ()=>{showScreen('game');runner.start();}); $('restart-button').addEventListener('click', ()=>runner.start()); $('menu-button').addEventListener('click', ()=>{runner.stop();showScreen('menu');});
+  $('replay-dialogue').addEventListener('click', e=>{e.stopPropagation();startDialogue();}); $('start-button').addEventListener('click', ()=>{showScreen('game');runner.start();}); $('restart-button').addEventListener('click', ()=>runner.start()); $('menu-button').addEventListener('click', ()=>{runner.stop();showScreen('menu');});
 
   const canvas=$('game-canvas'), ctx=canvas.getContext('2d'), playerElement=$('player-sprite'); let W=0,H=0,dpr=1;
   const runner = {running:false,raf:0,last:0,score:0,high:Number(localStorage.getItem('milena-high-score')||0),sunflowerRecord:Number(localStorage.getItem('milena-sunflower-record')||0),sunflowersCollected:0,speed:330,speedMultiplier:1,viewportScale:1,ground:0,groundOffset:0,groundImage:null,gravity:2000,jumpVelocity:840,jumpDuration:0,jumpHeight:0,compoundWidth:0,jumpTargetDistance:0,lastGroupWidth:0,coyoteTimer:0,player:{x:0,y:0,w:156,h:182,vy:0,onGround:true},obstacles:[],sunflowers:[],sunflowerIn:0,spawnIn:1.3,bonusUntil:0,playerImage:null,playerReady:false,
