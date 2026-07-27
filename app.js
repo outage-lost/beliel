@@ -5,6 +5,7 @@
   const EVENT_MONTH = 7;
   const EVENT_DAY = 6;
   const SIMULATION_KEY = 'beliel-simulacion-6-agosto';
+  const SIMULATION_STARTED_KEY = 'beliel-simulacion-iniciada';
   const NOTICE_KEY = 'beliel-aviso-privacidad';
   const dialogues = [
     'Hola.',
@@ -46,12 +47,20 @@
   let dialogueIndex = 0;
   let countdownTimer = 0;
   let simulatedNow = null;
+  let simulationStartedAt = null;
   try {
     const storedSimulation = sessionStorage.getItem(SIMULATION_KEY);
-    if (storedSimulation) simulatedNow = Number(storedSimulation);
+    const storedSimulationStartedAt = sessionStorage.getItem(SIMULATION_STARTED_KEY);
+    if (storedSimulation) {
+      simulatedNow = Number(storedSimulation);
+      simulationStartedAt = Number(storedSimulationStartedAt) || Date.now();
+    }
   } catch (error) { console.warn('No se pudo leer el modo de simulación.', error); }
 
-  function currentDate(){ return simulatedNow ? new Date(simulatedNow) : new Date(); }
+  function currentDate(){
+    if (!simulatedNow) return new Date();
+    return new Date(simulatedNow + (Date.now() - simulationStartedAt));
+  }
   function isEventDate(date = currentDate()){
     return date.getFullYear() === EVENT_YEAR && date.getMonth() === EVENT_MONTH && date.getDate() === EVENT_DAY;
   }
@@ -70,32 +79,44 @@
   function updateAvailability(){
     const available = isEventDate();
     window.clearInterval(countdownTimer);
+    $('menu-eyebrow').textContent = available ? 'Una experiencia especial' : 'Un pequeño juego';
+    $('menu-title-line').textContent = available ? 'Un día' : 'Salta y';
+    $('menu-title-em').textContent = available ? 'para recordar.' : 'diviértete.';
+    $('menu-intro').textContent = available ? 'Una pequeña aventura preparada para compartir un momento especial.' : 'Corre, esquiva obstáculos y recoge girasoles. Juega cuando quieras.';
     document.querySelectorAll('.date-only-control').forEach(control => { control.hidden = !available; });
     $('start-button').hidden = false;
     countdown.classList.toggle('is-hidden', !available);
     simulationButton.hidden = available;
     regularViewButton.hidden = !(simulatedNow && available);
     if (available) {
-      availabilityMessage.textContent = 'Esta versión de diseño estará disponible solo el 6 de agosto de 2026.';
+      availabilityMessage.textContent = 'Disponible únicamente hoy, 6 de agosto de 2026.';
       const update = () => { countdownValue.textContent = formatCountdown(eventEnd().getTime() - currentDate().getTime()); };
       update();
       countdownTimer = window.setInterval(update, 1000);
       showPrivacyNotice();
     } else {
-      availabilityMessage.textContent = 'La experiencia estará disponible el 6 de agosto de 2026.';
+      availabilityMessage.textContent = 'Juega cuando quieras.';
     }
   }
   function simulateEventDate(){
     const randomHour = Math.floor(Math.random() * 24);
     const randomMinute = Math.floor(Math.random() * 60);
     simulatedNow = new Date(EVENT_YEAR, EVENT_MONTH, EVENT_DAY, randomHour, randomMinute, Math.floor(Math.random() * 60)).getTime();
-    try { sessionStorage.setItem(SIMULATION_KEY, String(simulatedNow)); } catch (error) { console.warn('No se pudo guardar el modo de simulación.', error); }
+    simulationStartedAt = Date.now();
+    try {
+      sessionStorage.setItem(SIMULATION_KEY, String(simulatedNow));
+      sessionStorage.setItem(SIMULATION_STARTED_KEY, String(simulationStartedAt));
+    } catch (error) { console.warn('No se pudo guardar el modo de simulación.', error); }
     updateAvailability();
     showPrivacyNotice();
   }
   function restoreRegularView(){
     simulatedNow = null;
-    try { sessionStorage.removeItem(SIMULATION_KEY); } catch (error) { console.warn('No se pudo cerrar el modo de simulación.', error); }
+    simulationStartedAt = null;
+    try {
+      sessionStorage.removeItem(SIMULATION_KEY);
+      sessionStorage.removeItem(SIMULATION_STARTED_KEY);
+    } catch (error) { console.warn('No se pudo cerrar el modo de simulación.', error); }
     updateAvailability();
   }
   function showScreen(name){Object.values(screens).forEach(s=>s.classList.add('is-hidden')); screens[name].classList.remove('is-hidden');}
