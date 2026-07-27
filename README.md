@@ -1,23 +1,126 @@
-# Una experiencia especial
+# Beliel · Una experiencia especial
 
-Una experiencia interactiva convertida en una pequeña aventura web. El proyecto combina una secuencia de diálogos, personajes pixelados, girasoles y un minijuego runner.
+```text
 
-La versión especial está disponible únicamente el 6 de agosto de 2026, de 00:00 a 23:59 en la hora local del navegador. El aviso de privacidad se muestra una sola vez y se guarda en el almacenamiento local del navegador.
 
-La vista especial y el contador se activan automáticamente usando la zona horaria, fecha y hora actuales del navegador. La interfaz también actualiza su estado al volver a hacerse visible la pestaña y al cambiar de día.
 
-El aviso de privacidad es únicamente informativo y no bloquea la experiencia. Un sitio estático no puede identificar de forma fiable si otra persona está mirando físicamente la pantalla; para una protección real haría falta autenticación y un servidor.
 
-## Ejecutar localmente
 
-Al cargar `index.html` directamente funciona en la mayoría de navegadores, pero el runner necesita que el `.piskel` se sirva por HTTP. Para una prueba local:
 
-```bash
-docker build -t beliel .
-docker run --rm -p 8080:80 beliel
+
+
+
+
+                                    .%%%%      %=
+                                   :%%-%%%%   %%%+
+                                   :%%  =%%%+ %%%%%
+                                   :%%   %%%% #%%%%
+                                    .%%   %%%% *%%%
+                                      .%%  %%%.*%%%
+                                        %%%%%%*%%%%%%*:
+                                          %%%%%%%%%%%%%*:
+                                         %%%%%%%%%%#%%%%*.
+                                         %%%%%%%%%%..%%%%#.
+                                  %%%%%%%.%%%%%%%%%%%%%%%%@
+                             -%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+                            *%%%%%%%%%%%%%%%%%%%%%%%%%...
+                          %%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+                         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                         %%%%%%%%%%#.:#%%%%%%%%%%%%%%%#
+                         %%%%%%%%%%%%%% %%%%%%%%%%%%%%
+                     %%% %%%%%%%%%%%%%%% %%%%%%+#%%%=
+                    @%%%%%%%%%%%%%%%%%%% %%%%%%:*%%%
+                     *%%%%%%%%%%%%%%%%+ ++%%%%%:*%%%@
+                      =** *%%%%%%%%%%%%%%: =%%%%-=%%%-
+                            ##############. ####:-####
+
+
+
+
+
+
+
+
+
+
 ```
 
-Visita `http://localhost:8080` para desarrollo local. En producción, sirve el sitio detrás de HTTPS; el frontend redirige a HTTPS y Nginx respeta `X-Forwarded-Proto` cuando está detrás de un proxy como Cloudflare.
+## Dedicatoria
+
+Esta página nació como una pequeña forma de decir algo que a veces cuesta poner en palabras.
+
+No fue creada para exigir una respuesta ni para cambiar lo que ya pasó. Fue hecha para dejar un mensaje con calma: reconocer los errores, pedir perdón por las veces que fallé y agradecer los momentos compartidos. También para recordar que, incluso después de los días difíciles, siempre quise que te fuera bien.
+
+Ojalá esta nueva etapa esté llena de tranquilidad, personas que te quieran de verdad y oportunidades para cumplir todo lo que te propongas. Que puedas mirar hacia adelante con libertad y encontrar muchos motivos para sentirte orgullosa de quien eres.
+
+Esta aventura guarda un último deseo: que seas feliz. No importa cuánto tiempo pase ni dónde nos encuentre la vida; ese deseo permanece.
+
+## Sobre el proyecto
+
+Beliel es una experiencia web interactiva que combina una secuencia de diálogos, personajes ilustrados, girasoles y un minijuego runner. La experiencia está pensada como un contenido personal, con una presentación especial disponible únicamente el 6 de agosto de 2026.
+
+La aplicación consulta la zona horaria, la fecha y la hora actuales del navegador cada vez que se abre. Con esa información determina la vista activa, actualiza el contador en tiempo real y mantiene la disponibilidad de los diálogos exclusivamente durante el 6 de agosto, desde las 00:00 hasta las 23:59.
+
+El aviso de privacidad se muestra una sola vez por navegador. El contenido especial debe ser visto únicamente por la persona asignada y no debe compartirse, copiarse ni difundirse.
+
+## Clonar el repositorio
+
+Requisitos: Git y Docker con Docker Compose.
+
+```bash
+git clone https://github.com/outage-lost/beliel.git
+cd beliel
+```
+
+## Desplegar con Docker
+
+Construye la imagen y levanta el contenedor en segundo plano:
+
+```bash
+docker compose up -d --build
+```
+
+Comprueba que el servicio esté activo y saludable:
+
+```bash
+docker compose ps
+```
+
+## Abrir en el navegador
+
+Con el despliegue local activo, abre:
+
+```text
+http://localhost:18080
+```
+
+En producción, publica el puerto del contenedor detrás de un proxy con HTTPS. La configuración de Nginx incluye encabezados de seguridad y respeta `X-Forwarded-Proto` cuando se utiliza detrás de Cloudflare u otro proxy inverso.
+
+## Detener y reiniciar el contenedor
+
+Para detener el servicio sin eliminarlo:
+
+```bash
+docker compose stop
+```
+
+Para iniciarlo de nuevo:
+
+```bash
+docker compose start
+```
+
+Para detenerlo y eliminar los contenedores y la red del proyecto:
+
+```bash
+docker compose down
+```
+
+Para volver a desplegar después de modificar archivos:
+
+```bash
+docker compose up -d --build
+```
 
 ## Controles
 
@@ -27,7 +130,9 @@ Visita `http://localhost:8080` para desarrollo local. En producción, sirve el s
 
 ## Estructura
 
-- `index.html`: pantallas, controles y contenido accesible.
+- `index.html`: pantallas, controles, metadatos y analítica.
 - `styles.css`: estilos, animaciones y componentes de la interfaz.
-- `app.js`: navegación de diálogos, persistencia y lógica del minijuego.
+- `app.js`: detección de fecha, contador, navegación de diálogos, persistencia y lógica del minijuego.
+- `nginx.conf`: servidor web y encabezados de seguridad.
+- `docker-compose.yml`: configuración de despliegue local y producción.
 - `recursos-visuales/`: sprites, fondos y elementos gráficos.
