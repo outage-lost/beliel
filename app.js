@@ -1,6 +1,11 @@
 (() => {
   'use strict';
   const A = 'recursos-visuales/';
+  const EVENT_YEAR = 2026;
+  const EVENT_MONTH = 7;
+  const EVENT_DAY = 6;
+  const SIMULATION_KEY = 'beliel-simulacion-6-agosto';
+  const NOTICE_KEY = 'beliel-aviso-privacidad';
   const dialogues = [
     'Hola.',
     'Feliz cumpleaños. Espero que este sea un muy buen día para ti. Espero que estés rodeada de todas las personas que te quieren y que te aman. De verdad deseo que esta nueva etapa de tu vida esté llena de cosas bonitas.',
@@ -33,7 +38,65 @@
   ];
   const $ = (id) => document.getElementById(id);
   const screens = {dialogue: $('dialogue-screen'), menu: $('menu-screen'), game: $('game-screen')};
+  const app = $('app');
+  const simulationButton = $('simulate-date');
+  const countdown = $('countdown');
+  const countdownValue = $('countdown-value');
+  const availabilityMessage = $('availability-message');
   let dialogueIndex = 0;
+  let countdownTimer = 0;
+  let simulatedNow = null;
+  try {
+    const storedSimulation = sessionStorage.getItem(SIMULATION_KEY);
+    if (storedSimulation) simulatedNow = Number(storedSimulation);
+  } catch (error) { console.warn('No se pudo leer el modo de simulación.', error); }
+
+  function currentDate(){ return simulatedNow ? new Date(simulatedNow) : new Date(); }
+  function isEventDate(date = currentDate()){
+    return date.getFullYear() === EVENT_YEAR && date.getMonth() === EVENT_MONTH && date.getDate() === EVENT_DAY;
+  }
+  function eventEnd(date = currentDate()){
+    return new Date(EVENT_YEAR, EVENT_MONTH, EVENT_DAY + 1, 0, 0, 0, 0);
+  }
+  function formatCountdown(milliseconds){
+    const seconds = Math.max(0, Math.floor(milliseconds / 1000));
+    return [Math.floor(seconds / 3600), Math.floor(seconds / 60) % 60, seconds % 60].map(value => String(value).padStart(2, '0')).join(':');
+  }
+  function showPrivacyNotice(){
+    if (!isEventDate() || localStorage.getItem(NOTICE_KEY) === String(EVENT_YEAR)) return;
+    window.alert('Aviso de privacidad y seguridad\n\nEsta experiencia es personal y su contenido solo debe ser visto por la persona asignada. Si la página pierde visibilidad o foco, se bloqueará para proteger el contenido. No compartas esta ventana ni sus capturas.\n\nEsta versión de diseño estará disponible únicamente el 6 de agosto de 2026.');
+    localStorage.setItem(NOTICE_KEY, String(EVENT_YEAR));
+  }
+  function lockExperience(){
+    if (!isEventDate() || app.classList.contains('is-locked')) return;
+    runner.stop();
+    app.classList.add('is-locked');
+    app.setAttribute('aria-label', 'Experiencia bloqueada por privacidad');
+  }
+  function updateAvailability(){
+    const available = isEventDate();
+    document.querySelectorAll('.date-only-control').forEach(control => { control.hidden = !available; });
+    $('start-button').hidden = !available;
+    countdown.classList.toggle('is-hidden', !available);
+    simulationButton.hidden = available;
+    if (available) {
+      availabilityMessage.textContent = 'Esta versión de diseño estará disponible solo el 6 de agosto de 2026.';
+      const update = () => { countdownValue.textContent = formatCountdown(eventEnd().getTime() - currentDate().getTime()); };
+      update();
+      countdownTimer = window.setInterval(update, 1000);
+      showPrivacyNotice();
+    } else {
+      availabilityMessage.textContent = 'La experiencia estará disponible el 6 de agosto de 2026.';
+    }
+  }
+  function simulateEventDate(){
+    const randomHour = Math.floor(Math.random() * 24);
+    const randomMinute = Math.floor(Math.random() * 60);
+    simulatedNow = new Date(EVENT_YEAR, EVENT_MONTH, EVENT_DAY, randomHour, randomMinute, Math.floor(Math.random() * 60)).getTime();
+    try { sessionStorage.setItem(SIMULATION_KEY, String(simulatedNow)); } catch (error) { console.warn('No se pudo guardar el modo de simulación.', error); }
+    updateAvailability();
+    showPrivacyNotice();
+  }
   function showScreen(name){Object.values(screens).forEach(s=>s.classList.add('is-hidden')); screens[name].classList.remove('is-hidden');}
   function renderDialogue(){ const text=$('dialogue-text'); text.textContent=dialogues[dialogueIndex]; $('dialogue-count').textContent=`${String(dialogueIndex+1).padStart(2,'0')} / ${dialogues.length}`; }
   function advanceDialogue(){if(dialogueIndex < dialogues.length-1){dialogueIndex++;renderDialogue();}else{localStorage.setItem('milena-dialogue-seen','1');showScreen('menu');}}
@@ -44,6 +107,9 @@
   $('dialogue-home').addEventListener('click', e=>{e.preventDefault();e.stopPropagation();showScreen('menu');});
   $('dialogue-hide').addEventListener('click', e=>{e.preventDefault();e.stopPropagation();localStorage.setItem('milena-dialogue-hidden','1');showScreen('menu');});
   $('replay-dialogue').addEventListener('click', e=>{e.stopPropagation();startDialogue();}); $('start-button').addEventListener('click', ()=>{showScreen('game');runner.start();}); $('restart-button').addEventListener('click', ()=>runner.start()); $('menu-button').addEventListener('click', ()=>{runner.stop();showScreen('menu');});
+  simulationButton.addEventListener('click', simulateEventDate);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) lockExperience(); });
+  window.addEventListener('blur', lockExperience);
 
   const canvas=$('game-canvas'), ctx=canvas.getContext('2d'), playerElement=$('player-sprite'); let W=0,H=0,dpr=1;
   const runner = {running:false,raf:0,last:0,score:0,high:Number(localStorage.getItem('milena-high-score')||0),sunflowerRecord:Number(localStorage.getItem('milena-sunflower-record')||0),sunflowersCollected:0,speed:330,speedMultiplier:1,viewportScale:1,ground:0,groundOffset:0,groundImage:null,gravity:2000,jumpVelocity:840,jumpDuration:0,jumpHeight:0,compoundWidth:0,jumpTargetDistance:0,lastGroupWidth:0,coyoteTimer:0,player:{x:0,y:0,w:156,h:182,vy:0,onGround:true},obstacles:[],sunflowers:[],sunflowerIn:0,spawnIn:1.3,bonusUntil:0,playerImage:null,playerReady:false,
@@ -65,5 +131,6 @@
     end(){this.running=false;cancelAnimationFrame(this.raf);playerElement.classList.add('is-hidden');$('bonus-indicator').classList.add('is-hidden');const current=Math.floor(this.score);if(current>this.high){this.high=current;localStorage.setItem('milena-high-score',String(this.high));}$('final-score').textContent=current;$('final-high-score').textContent=this.high;$('high-score').textContent=String(this.high).padStart(5,'0');$('game-over').classList.remove('is-hidden');}
   };
   window.addEventListener('resize',()=>{if(!screens.game.classList.contains('is-hidden')){runner.resize();runner.syncPlayerElement();}}); canvas.addEventListener('pointerdown',()=>runner.jump());
+  updateAvailability();
   showScreen('menu');
 })();

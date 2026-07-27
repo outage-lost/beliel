@@ -4,17 +4,31 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#304d3c" />
-    <meta name="description" content="Feliz cumpleaños · Una pequeña aventura para celebrar un día especial." />
+    <meta name="description" content="Una pequeña aventura para celebrar un día especial." />
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
     <link rel="icon" type="image/png" href="recursos-visuales/beliel-removebg-preview.png" />
     <link rel="apple-touch-icon" href="recursos-visuales/beliel-removebg-preview.png" />
-    <title>Feliz cumpleaños · 20 vueltas al sol</title>
+    <title>Una experiencia especial</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css?v=20260723-8" />
+    <!-- Privacy-friendly analytics by Plausible -->
+    <script async src="https://analytics.ferkalabs.lat/js/pa-2IgsoMbPGMfhkTC892_wI.js"></script>
+    <script>
+      window.plausible = window.plausible || function () { (plausible.q = plausible.q || []).push(arguments); };
+      plausible.init = plausible.init || function (i) { plausible.o = i || {}; };
+      plausible.init();
+    </script>
   </head>
   <body>
+    <script>
+      if (location.protocol === 'http:' && !['localhost', '127.0.0.1'].includes(location.hostname)) {
+        location.replace('https:' + location.href.slice(5));
+      }
+    </script>
     <main id="app" aria-live="polite">
+      <div class="privacy-lock" role="alert">Esta experiencia se bloqueó porque la página dejó de estar visible. Cierra y vuelve a abrir la página asignada para continuar.</div>
       <section id="dialogue-screen" class="screen dialogue-screen" aria-label="Carta de Joel">
         <div class="dialogue-frame">
           <div class="letter-mark">Para Milena <span>·</span> 20</div>
@@ -31,10 +45,9 @@
       </section>
 
       <section id="menu-screen" class="screen menu-screen is-hidden" aria-label="Menú principal">
-        <div class="menu-copy"><p class="eyebrow">Una pequeña aventura hecha para ti</p><h1>Feliz<br /><em>cumpleaños.</em></h1><p class="intro">Un día para celebrar tus 20 años, todo lo que has crecido y todo lo bonito que todavía te espera.</p></div>
+        <div class="menu-copy"><p class="eyebrow">Una experiencia especial</p><h1>Un día<br /><em>para recordar.</em></h1><p class="intro">Una pequeña aventura preparada para compartir un momento especial.</p><p id="availability-message" class="availability-message" role="status"></p></div>
         <div class="menu-characters" aria-hidden="true"><img class="mil-static" src="recursos-visuales/avatar-mil-de-pie-fijo-removebg-preview.png" alt="" /><img class="beliel" src="recursos-visuales/beliel-removebg-preview.png" alt="" /></div>
-        <div class="menu-actions"><button id="start-button" class="image-button" aria-label="Comenzar la aventura"><img src="recursos-visuales/boton-de-inicio.png" alt="Comenzar" /></button><button id="replay-dialogue" class="text-button">Ver diálogos <span>↗</span></button><button id="dialogue-hide" class="text-button dialogue-hide-button" type="button">No volver a mostrar los diálogos</button></div>
-        <p class="menu-note">Hecho con cariño · 21 de julio de 2026</p>
+        <div class="menu-actions"><div id="countdown" class="countdown is-hidden" aria-live="polite"><span>Disponible durante</span><strong id="countdown-value">00:00:00</strong></div><button id="start-button" class="image-button" aria-label="Comenzar la aventura"><img src="recursos-visuales/boton-de-inicio.png" alt="Comenzar" /></button><button id="replay-dialogue" class="text-button date-only-control">Ver diálogos <span>↗</span></button><button id="dialogue-hide" class="text-button dialogue-hide-button date-only-control" type="button">No volver a mostrar los diálogos</button><button id="simulate-date" class="text-button simulation-button" type="button">Simular 6 de agosto</button></div>
       </section>
 
       <section id="game-screen" class="screen game-screen is-hidden" aria-label="Aventura de Milena">

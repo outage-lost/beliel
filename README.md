@@ -1,8 +1,12 @@
-# Para Milena · 20 vueltas al sol
+# Una experiencia especial
 
-Una carta interactiva de cumpleaños convertida en una pequeña aventura web. El proyecto combina una secuencia de diálogos, personajes pixelados, girasoles y un minijuego runner para celebrar los 20 años de Milena.
+Una experiencia interactiva convertida en una pequeña aventura web. El proyecto combina una secuencia de diálogos, personajes pixelados, girasoles y un minijuego runner.
 
-La experiencia comienza con el mensaje y, al terminarlo, abre el menú principal para volver a leerlo o jugar. Todo está construido como un sitio estático, sin backend ni dependencias de instalación.
+La versión especial está disponible únicamente el 6 de agosto de 2026, de 00:00 a 23:59 en la hora local del navegador. El aviso de privacidad se muestra una sola vez y se guarda en el almacenamiento local del navegador.
+
+El botón temporal «Simular 6 de agosto» permite probar la experiencia fuera de esa fecha; selecciona una hora aleatoria dentro del día y permanece activo durante la sesión.
+
+La detección de privacidad implementada es técnica: si la pestaña deja de estar visible o la ventana pierde el foco, la interfaz se bloquea. Un sitio estático no puede identificar de forma fiable si otra persona está mirando físicamente la pantalla; para una protección real haría falta autenticación y un servidor.
 
 ## Ejecutar localmente
 
@@ -13,7 +17,7 @@ docker build -t beliel .
 docker run --rm -p 8080:80 beliel
 ```
 
-Visita `http://localhost:8080`. En Dockploy, publica el puerto del contenedor `80` en el puerto que prefieras y usa esa dirección IP:puerto como origen para Cloudflared.
+Visita `http://localhost:8080` para desarrollo local. En producción, sirve el sitio detrás de HTTPS; el frontend redirige a HTTPS y Nginx respeta `X-Forwarded-Proto` cuando está detrás de un proxy como Cloudflare.
 
 ## Controles
 
