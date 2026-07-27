@@ -6,7 +6,7 @@ La versión especial está disponible únicamente el 6 de agosto de 2026, de 00:
 
 El botón temporal «Simular 6 de agosto» permite probar la experiencia fuera de esa fecha; selecciona una hora aleatoria dentro del día y permanece activo durante la sesión.
 
-La detección de privacidad implementada es técnica: si la pestaña deja de estar visible o la ventana pierde el foco, la interfaz se bloquea. Un sitio estático no puede identificar de forma fiable si otra persona está mirando físicamente la pantalla; para una protección real haría falta autenticación y un servidor.
+El aviso de privacidad es únicamente informativo y no bloquea la experiencia. Un sitio estático no puede identificar de forma fiable si otra persona está mirando físicamente la pantalla; para una protección real haría falta autenticación y un servidor.
 
 ## Ejecutar localmente
 

@@ -38,7 +38,6 @@
   ];
   const $ = (id) => document.getElementById(id);
   const screens = {dialogue: $('dialogue-screen'), menu: $('menu-screen'), game: $('game-screen')};
-  const app = $('app');
   const simulationButton = $('simulate-date');
   const countdown = $('countdown');
   const countdownValue = $('countdown-value');
@@ -64,19 +63,13 @@
   }
   function showPrivacyNotice(){
     if (!isEventDate() || localStorage.getItem(NOTICE_KEY) === String(EVENT_YEAR)) return;
-    window.alert('Aviso de privacidad y seguridad\n\nEsta experiencia es personal y su contenido solo debe ser visto por la persona asignada. Si la página pierde visibilidad o foco, se bloqueará para proteger el contenido. No compartas esta ventana ni sus capturas.\n\nEsta versión de diseño estará disponible únicamente el 6 de agosto de 2026.');
+    window.alert('Aviso de privacidad\n\nEsta experiencia es personal y su contenido solo debe ser visto por la persona asignada. No compartas esta ventana ni sus capturas.\n\nEsta versión de diseño estará disponible únicamente el 6 de agosto de 2026.');
     localStorage.setItem(NOTICE_KEY, String(EVENT_YEAR));
-  }
-  function lockExperience(){
-    if (!isEventDate() || app.classList.contains('is-locked')) return;
-    runner.stop();
-    app.classList.add('is-locked');
-    app.setAttribute('aria-label', 'Experiencia bloqueada por privacidad');
   }
   function updateAvailability(){
     const available = isEventDate();
     document.querySelectorAll('.date-only-control').forEach(control => { control.hidden = !available; });
-    $('start-button').hidden = !available;
+    $('start-button').hidden = false;
     countdown.classList.toggle('is-hidden', !available);
     simulationButton.hidden = available;
     if (available) {
@@ -108,8 +101,6 @@
   $('dialogue-hide').addEventListener('click', e=>{e.preventDefault();e.stopPropagation();localStorage.setItem('milena-dialogue-hidden','1');showScreen('menu');});
   $('replay-dialogue').addEventListener('click', e=>{e.stopPropagation();startDialogue();}); $('start-button').addEventListener('click', ()=>{showScreen('game');runner.start();}); $('restart-button').addEventListener('click', ()=>runner.start()); $('menu-button').addEventListener('click', ()=>{runner.stop();showScreen('menu');});
   simulationButton.addEventListener('click', simulateEventDate);
-  document.addEventListener('visibilitychange', () => { if (document.hidden) lockExperience(); });
-  window.addEventListener('blur', lockExperience);
 
   const canvas=$('game-canvas'), ctx=canvas.getContext('2d'), playerElement=$('player-sprite'); let W=0,H=0,dpr=1;
   const runner = {running:false,raf:0,last:0,score:0,high:Number(localStorage.getItem('milena-high-score')||0),sunflowerRecord:Number(localStorage.getItem('milena-sunflower-record')||0),sunflowersCollected:0,speed:330,speedMultiplier:1,viewportScale:1,ground:0,groundOffset:0,groundImage:null,gravity:2000,jumpVelocity:840,jumpDuration:0,jumpHeight:0,compoundWidth:0,jumpTargetDistance:0,lastGroupWidth:0,coyoteTimer:0,player:{x:0,y:0,w:156,h:182,vy:0,onGround:true},obstacles:[],sunflowers:[],sunflowerIn:0,spawnIn:1.3,bonusUntil:0,playerImage:null,playerReady:false,
