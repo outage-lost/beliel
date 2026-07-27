@@ -4,8 +4,6 @@
   const EVENT_YEAR = 2026;
   const EVENT_MONTH = 7;
   const EVENT_DAY = 6;
-  const SIMULATION_KEY = 'beliel-simulacion-6-agosto';
-  const SIMULATION_STARTED_KEY = 'beliel-simulacion-iniciada';
   const NOTICE_KEY = 'beliel-aviso-privacidad';
   const dialogues = [
     'Hola.',
@@ -39,46 +37,40 @@
   ];
   const $ = (id) => document.getElementById(id);
   const screens = {dialogue: $('dialogue-screen'), menu: $('menu-screen'), game: $('game-screen')};
-  const simulationButton = $('simulate-date');
-  const regularViewButton = $('regular-view');
   const countdown = $('countdown');
   const countdownValue = $('countdown-value');
   const availabilityMessage = $('availability-message');
   let dialogueIndex = 0;
-  let countdownTimer = 0;
-  let simulatedNow = null;
-  let simulationStartedAt = null;
-  try {
-    const storedSimulation = sessionStorage.getItem(SIMULATION_KEY);
-    const storedSimulationStartedAt = sessionStorage.getItem(SIMULATION_STARTED_KEY);
-    if (storedSimulation) {
-      simulatedNow = Number(storedSimulation);
-      simulationStartedAt = Number(storedSimulationStartedAt) || Date.now();
-    }
-  } catch (error) { console.warn('No se pudo leer el modo de simulación.', error); }
+  let lastAvailability = false;
+  const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  const clockFormatter = new Intl.DateTimeFormat('es-EC', {
+    timeZone: browserTimeZone,
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23'
+  });
 
-  function currentDate(){
-    if (!simulatedNow) return new Date();
-    return new Date(simulatedNow + (Date.now() - simulationStartedAt));
+  function readClock(){
+    const parts = Object.fromEntries(clockFormatter.formatToParts(new Date()).filter(part => part.type !== 'literal').map(part => [part.type, Number(part.value)]));
+    return {timeZone: browserTimeZone, now: new Date(), ...parts};
   }
-  function isEventDate(date = currentDate()){
-    return date.getFullYear() === EVENT_YEAR && date.getMonth() === EVENT_MONTH && date.getDate() === EVENT_DAY;
+  function isEventDate(clock){
+    return clock.year === EVENT_YEAR && clock.month === EVENT_MONTH + 1 && clock.day === EVENT_DAY;
   }
-  function eventEnd(date = currentDate()){
+  function eventEnd(){
     return new Date(EVENT_YEAR, EVENT_MONTH, EVENT_DAY + 1, 0, 0, 0, 0);
   }
   function formatCountdown(milliseconds){
     const seconds = Math.max(0, Math.floor(milliseconds / 1000));
     return [Math.floor(seconds / 3600), Math.floor(seconds / 60) % 60, seconds % 60].map(value => String(value).padStart(2, '0')).join(':');
   }
-  function showPrivacyNotice(){
-    if (!isEventDate() || localStorage.getItem(NOTICE_KEY) === String(EVENT_YEAR)) return;
+  function showPrivacyNotice(clock){
+    if (!isEventDate(clock) || localStorage.getItem(NOTICE_KEY) === String(EVENT_YEAR)) return;
     window.alert('Aviso de privacidad\n\nEsta experiencia es personal y su contenido solo debe ser visto por la persona asignada. No compartas esta ventana ni sus capturas.\n\nEsta versión de diseño estará disponible únicamente el 6 de agosto de 2026.');
     localStorage.setItem(NOTICE_KEY, String(EVENT_YEAR));
   }
-  function updateAvailability(){
-    const available = isEventDate();
-    window.clearInterval(countdownTimer);
+  function updateAvailability(clock = readClock()){
+    const available = isEventDate(clock);
+    lastAvailability = available;
     $('menu-eyebrow').textContent = available ? 'Una experiencia especial' : 'Un pequeño juego';
     $('menu-title-line').textContent = available ? 'Un día' : 'Salta y';
     $('menu-title-em').textContent = available ? 'para recordar.' : 'diviértete.';
@@ -86,38 +78,18 @@
     document.querySelectorAll('.date-only-control').forEach(control => { control.hidden = !available; });
     $('start-button').hidden = false;
     countdown.classList.toggle('is-hidden', !available);
-    simulationButton.hidden = available;
-    regularViewButton.hidden = !(simulatedNow && available);
     if (available) {
       availabilityMessage.textContent = 'Disponible únicamente hoy, 6 de agosto de 2026.';
-      const update = () => { countdownValue.textContent = formatCountdown(eventEnd().getTime() - currentDate().getTime()); };
-      update();
-      countdownTimer = window.setInterval(update, 1000);
-      showPrivacyNotice();
+      countdownValue.textContent = formatCountdown(eventEnd().getTime() - clock.now.getTime());
+      showPrivacyNotice(clock);
     } else {
       availabilityMessage.textContent = 'Juega cuando quieras.';
     }
   }
-  function simulateEventDate(){
-    const randomHour = Math.floor(Math.random() * 24);
-    const randomMinute = Math.floor(Math.random() * 60);
-    simulatedNow = new Date(EVENT_YEAR, EVENT_MONTH, EVENT_DAY, randomHour, randomMinute, Math.floor(Math.random() * 60)).getTime();
-    simulationStartedAt = Date.now();
-    try {
-      sessionStorage.setItem(SIMULATION_KEY, String(simulatedNow));
-      sessionStorage.setItem(SIMULATION_STARTED_KEY, String(simulationStartedAt));
-    } catch (error) { console.warn('No se pudo guardar el modo de simulación.', error); }
-    updateAvailability();
-    showPrivacyNotice();
-  }
-  function restoreRegularView(){
-    simulatedNow = null;
-    simulationStartedAt = null;
-    try {
-      sessionStorage.removeItem(SIMULATION_KEY);
-      sessionStorage.removeItem(SIMULATION_STARTED_KEY);
-    } catch (error) { console.warn('No se pudo cerrar el modo de simulación.', error); }
-    updateAvailability();
+  function refreshClock(){
+    const clock = readClock();
+    if (isEventDate(clock) !== lastAvailability) updateAvailability(clock);
+    else if (lastAvailability) countdownValue.textContent = formatCountdown(eventEnd().getTime() - clock.now.getTime());
   }
   function showScreen(name){Object.values(screens).forEach(s=>s.classList.add('is-hidden')); screens[name].classList.remove('is-hidden');}
   function renderDialogue(){ const text=$('dialogue-text'); text.textContent=dialogues[dialogueIndex]; $('dialogue-count').textContent=`${String(dialogueIndex+1).padStart(2,'0')} / ${dialogues.length}`; }
@@ -129,8 +101,6 @@
   $('dialogue-home').addEventListener('click', e=>{e.preventDefault();e.stopPropagation();showScreen('menu');});
   $('dialogue-hide').addEventListener('click', e=>{e.preventDefault();e.stopPropagation();localStorage.setItem('milena-dialogue-hidden','1');showScreen('menu');});
   $('replay-dialogue').addEventListener('click', e=>{e.stopPropagation();startDialogue();}); $('start-button').addEventListener('click', ()=>{showScreen('game');runner.start();}); $('restart-button').addEventListener('click', ()=>runner.start()); $('menu-button').addEventListener('click', ()=>{runner.stop();showScreen('menu');});
-  simulationButton.addEventListener('click', simulateEventDate);
-  regularViewButton.addEventListener('click', restoreRegularView);
 
   const canvas=$('game-canvas'), ctx=canvas.getContext('2d'), playerElement=$('player-sprite'); let W=0,H=0,dpr=1;
   const runner = {running:false,raf:0,last:0,score:0,high:Number(localStorage.getItem('milena-high-score')||0),sunflowerRecord:Number(localStorage.getItem('milena-sunflower-record')||0),sunflowersCollected:0,speed:330,speedMultiplier:1,viewportScale:1,ground:0,groundOffset:0,groundImage:null,gravity:2000,jumpVelocity:840,jumpDuration:0,jumpHeight:0,compoundWidth:0,jumpTargetDistance:0,lastGroupWidth:0,coyoteTimer:0,player:{x:0,y:0,w:156,h:182,vy:0,onGround:true},obstacles:[],sunflowers:[],sunflowerIn:0,spawnIn:1.3,bonusUntil:0,playerImage:null,playerReady:false,
@@ -152,6 +122,9 @@
     end(){this.running=false;cancelAnimationFrame(this.raf);playerElement.classList.add('is-hidden');$('bonus-indicator').classList.add('is-hidden');const current=Math.floor(this.score);if(current>this.high){this.high=current;localStorage.setItem('milena-high-score',String(this.high));}$('final-score').textContent=current;$('final-high-score').textContent=this.high;$('high-score').textContent=String(this.high).padStart(5,'0');$('game-over').classList.remove('is-hidden');}
   };
   window.addEventListener('resize',()=>{if(!screens.game.classList.contains('is-hidden')){runner.resize();runner.syncPlayerElement();}}); canvas.addEventListener('pointerdown',()=>runner.jump());
-  updateAvailability();
+  updateAvailability(readClock());
+  window.setInterval(refreshClock, 1000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshClock(); });
+  window.addEventListener('pageshow', refreshClock);
   showScreen('menu');
 })();

@@ -4,7 +4,7 @@ Una experiencia interactiva convertida en una pequeña aventura web. El proyecto
 
 La versión especial está disponible únicamente el 6 de agosto de 2026, de 00:00 a 23:59 en la hora local del navegador. El aviso de privacidad se muestra una sola vez y se guarda en el almacenamiento local del navegador.
 
-Los botones temporales «Ver vista del 6 de agosto» y «Volver a la vista normal» permiten comprobar ambos diseños fuera de esa fecha; la vista especial selecciona una hora aleatoria dentro del día y permanece activa durante la sesión.
+La vista especial y el contador se activan automáticamente usando la zona horaria, fecha y hora actuales del navegador. La interfaz también actualiza su estado al volver a hacerse visible la pestaña y al cambiar de día.
 
 El aviso de privacidad es únicamente informativo y no bloquea la experiencia. Un sitio estático no puede identificar de forma fiable si otra persona está mirando físicamente la pantalla; para una protección real haría falta autenticación y un servidor.
 
