@@ -39,6 +39,7 @@
   const $ = (id) => document.getElementById(id);
   const screens = {dialogue: $('dialogue-screen'), menu: $('menu-screen'), game: $('game-screen')};
   const simulationButton = $('simulate-date');
+  const regularViewButton = $('regular-view');
   const countdown = $('countdown');
   const countdownValue = $('countdown-value');
   const availabilityMessage = $('availability-message');
@@ -68,10 +69,12 @@
   }
   function updateAvailability(){
     const available = isEventDate();
+    window.clearInterval(countdownTimer);
     document.querySelectorAll('.date-only-control').forEach(control => { control.hidden = !available; });
     $('start-button').hidden = false;
     countdown.classList.toggle('is-hidden', !available);
     simulationButton.hidden = available;
+    regularViewButton.hidden = !(simulatedNow && available);
     if (available) {
       availabilityMessage.textContent = 'Esta versión de diseño estará disponible solo el 6 de agosto de 2026.';
       const update = () => { countdownValue.textContent = formatCountdown(eventEnd().getTime() - currentDate().getTime()); };
@@ -90,6 +93,11 @@
     updateAvailability();
     showPrivacyNotice();
   }
+  function restoreRegularView(){
+    simulatedNow = null;
+    try { sessionStorage.removeItem(SIMULATION_KEY); } catch (error) { console.warn('No se pudo cerrar el modo de simulación.', error); }
+    updateAvailability();
+  }
   function showScreen(name){Object.values(screens).forEach(s=>s.classList.add('is-hidden')); screens[name].classList.remove('is-hidden');}
   function renderDialogue(){ const text=$('dialogue-text'); text.textContent=dialogues[dialogueIndex]; $('dialogue-count').textContent=`${String(dialogueIndex+1).padStart(2,'0')} / ${dialogues.length}`; }
   function advanceDialogue(){if(dialogueIndex < dialogues.length-1){dialogueIndex++;renderDialogue();}else{localStorage.setItem('milena-dialogue-seen','1');showScreen('menu');}}
@@ -101,6 +109,7 @@
   $('dialogue-hide').addEventListener('click', e=>{e.preventDefault();e.stopPropagation();localStorage.setItem('milena-dialogue-hidden','1');showScreen('menu');});
   $('replay-dialogue').addEventListener('click', e=>{e.stopPropagation();startDialogue();}); $('start-button').addEventListener('click', ()=>{showScreen('game');runner.start();}); $('restart-button').addEventListener('click', ()=>runner.start()); $('menu-button').addEventListener('click', ()=>{runner.stop();showScreen('menu');});
   simulationButton.addEventListener('click', simulateEventDate);
+  regularViewButton.addEventListener('click', restoreRegularView);
 
   const canvas=$('game-canvas'), ctx=canvas.getContext('2d'), playerElement=$('player-sprite'); let W=0,H=0,dpr=1;
   const runner = {running:false,raf:0,last:0,score:0,high:Number(localStorage.getItem('milena-high-score')||0),sunflowerRecord:Number(localStorage.getItem('milena-sunflower-record')||0),sunflowersCollected:0,speed:330,speedMultiplier:1,viewportScale:1,ground:0,groundOffset:0,groundImage:null,gravity:2000,jumpVelocity:840,jumpDuration:0,jumpHeight:0,compoundWidth:0,jumpTargetDistance:0,lastGroupWidth:0,coyoteTimer:0,player:{x:0,y:0,w:156,h:182,vy:0,onGround:true},obstacles:[],sunflowers:[],sunflowerIn:0,spawnIn:1.3,bonusUntil:0,playerImage:null,playerReady:false,
@@ -114,7 +123,7 @@
     addSunflower(){const img=new Image();img.src=A+'girasoles-removebg-preview.png';const size=113*1.1*this.viewportScale;this.sunflowers.push({x:W+30,y:this.ground-size,w:size,h:size,img});},
     obstacleGap(){const tier=Math.floor(this.score/100);const horizontalReach=Math.max(this.jumpTargetDistance,this.speed*this.jumpDuration*1.65);return Math.max(horizontalReach+180,this.lastGroupWidth*1.1+220,450,680-tier*32);},
     scheduleNextSpawn(){this.addObstacle();this.spawnIn=this.obstacleGap()/this.speed;},
-    speedTier(score){return Math.floor(score/350);},
+    speedTier(score){return Math.floor(score/225);},
     loop(now){if(!this.running)return;const dt=Math.min(.032,(now-this.last)/1000);this.last=now;const multiplier=now<this.bonusUntil?2:1;this.score+=dt*10*multiplier;const tier=this.speedTier(this.score);this.speedMultiplier=Math.min(5,1+tier*.2);this.speed=465*this.speedMultiplier*this.viewportScale;this.groundOffset=(this.groundOffset+this.speed*dt+W)%W;this.spawnIn-=dt;this.sunflowerIn-=dt;if(this.spawnIn<=0)this.scheduleNextSpawn();if(this.sunflowerIn<=0){this.addSunflower();this.sunflowerIn=1.275+Math.random()*15.3;}const p=this.player;if(!p.onGround)this.coyoteTimer=Math.max(0,this.coyoteTimer-dt);p.vy+=this.gravity*dt;p.y+=p.vy*dt;if(p.y>=this.ground-p.h){p.y=this.ground-p.h;p.vy=0;p.onGround=true;this.coyoteTimer=.12;}this.obstacles.forEach(o=>o.x-=this.speed*dt);this.sunflowers.forEach(s=>s.x-=this.speed*dt);this.obstacles=this.obstacles.filter(o=>o.x+o.w>-30);this.sunflowers=this.sunflowers.filter(s=>s.x+s.w>-30);const hitbox={x:p.x+29,y:p.y+15,w:p.w-58,h:p.h-30};for(const o of this.obstacles){if(hitbox.x<o.x+o.w-8&&hitbox.x+hitbox.w>o.x+8&&hitbox.y<o.y+o.h&&hitbox.y+hitbox.h>o.y+8){this.end();return;}}for(let i=this.sunflowers.length-1;i>=0;i--){const s=this.sunflowers[i];if(hitbox.x<s.x+s.w&&hitbox.x+hitbox.w>s.x&&hitbox.y<s.y+s.h&&hitbox.y+hitbox.h>s.y){this.bonusUntil=now+5000;this.sunflowers.splice(i,1);this.sunflowersCollected++;if(this.sunflowersCollected>this.sunflowerRecord){this.sunflowerRecord=this.sunflowersCollected;localStorage.setItem('milena-sunflower-record',String(this.sunflowerRecord));}$('sunflower-count').textContent=String(this.sunflowersCollected);$('sunflower-record').textContent=String(this.sunflowerRecord);}}this.updateBonus(now);$('speed-value').textContent=`${this.speedMultiplier.toFixed(1)}×`;this.syncPlayerElement();this.draw();this.raf=requestAnimationFrame(t=>this.loop(t));},
     syncPlayerElement(){playerElement.style.left=`${this.player.x}px`;playerElement.style.top=`${this.player.y}px`;playerElement.style.width=`${this.player.w}px`;playerElement.style.height=`${this.player.h}px`;},
     updateBonus(now){const active=now<this.bonusUntil;const indicator=$('bonus-indicator');indicator.classList.toggle('is-hidden',!active);if(active)$('bonus-time').textContent=`${Math.ceil((this.bonusUntil-now)/1000)}s`;},
