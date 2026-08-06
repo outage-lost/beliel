@@ -152,13 +152,15 @@ html,body{font-family:'DM Sans',system-ui,sans-serif}
   font:700 .78rem/1 "Courier New",monospace;
   transform:rotate(-4deg);
 }
-.dialogue-footer .repo-link{order:3}
+.dialogue-actions .repo-link{display:inline-flex;align-items:center;justify-content:center;min-height:2.35rem;color:#000;background:transparent;font:700 .9rem/1 Arial,Helvetica,sans-serif;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px;padding:.55rem .85rem;transition:color .2s ease,transform .2s ease}
+.dialogue-actions .repo-link:hover,.dialogue-actions .repo-link:focus-visible{color:#000;transform:translateY(-2px);outline:2px solid #000;outline-offset:2px}
 @media (max-width:800px){
   .menu-screen.birthday-mode{grid-template-columns:1fr;grid-template-rows:auto minmax(190px,35vh) auto}
   .birthday-mode .menu-title{font-size:clamp(3.9rem,17vw,6.4rem)}
   .birthday-mode .menu-characters{height:min(31vh,235px)}
   .birthday-mode .menu-characters:before{top:5%;left:0}
   .birthday-mode .menu-actions:after{align-self:center}
+  .dialogue-actions .repo-link{flex:1}
 }
 .dialogue-screen{cursor:default;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .dialogue-card{cursor:pointer;touch-action:manipulation}
