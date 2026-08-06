@@ -133,8 +133,7 @@ html,body{font-family:'DM Sans',system-ui,sans-serif}
   transform:rotate(-8deg);
   box-shadow:5px 5px 0 var(--birthday-ink);
 }
-.birthday-mode .menu-characters img{filter:drop-shadow(7px 9px 0 var(--birthday-pink)) drop-shadow(12px 14px 0 var(--birthday-ink))}
-.birthday-mode .menu-characters .beliel{filter:drop-shadow(5px 7px 0 var(--birthday-cyan)) drop-shadow(9px 11px 0 var(--birthday-ink))}
+.birthday-mode .menu-characters img,.birthday-mode .menu-characters .beliel{filter:none}
 .birthday-mode .menu-actions{transform:rotate(2deg)}
 .birthday-mode .countdown,.birthday-mode .text-button{
   border-radius:0;
