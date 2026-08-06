@@ -38,6 +38,129 @@ html,body{font-family:'DM Sans',system-ui,sans-serif}
 .dialogue-home-button{background:var(--forest);color:var(--white)}
 @media (max-width:800px){.dialogue-card p{font-size:clamp(1.18rem,4.7vw,1.6rem)}.dialogue-actions{justify-content:stretch}.dialogue-button{flex:1}}
 @media (max-width:520px){.dialogue-card{border-radius:18px 18px 18px 5px}.dialogue-card p{font-size:1.08rem;line-height:1.2}.dialogue-actions{gap:.4rem}.dialogue-button{padding:.5rem .45rem;font-size:.62rem}}
+
+/* La portada de cumpleaños vive solamente en .birthday-mode, activada por app.js el 6 de agosto. */
+.menu-screen.birthday-mode{
+  --birthday-ink:#211b18;
+  --birthday-paper:#e8e0c0;
+  --birthday-pink:#ff71ce;
+  --birthday-cyan:#00ffcc;
+  --birthday-yellow:#dfff00;
+  display:grid;
+  grid-template-columns:minmax(300px,1.05fr) minmax(270px,520px) minmax(190px,.62fr);
+  background-color:var(--birthday-paper);
+  background-image:
+    radial-gradient(circle at 18% 18%,rgba(255,113,206,.5) 0 2px,transparent 2.5px),
+    radial-gradient(circle at 72% 82%,rgba(0,255,204,.45) 0 2px,transparent 2.5px),
+    linear-gradient(115deg,rgba(255,113,206,.2),transparent 34%,rgba(223,255,0,.22) 70%,transparent);
+  background-size:22px 22px,28px 28px,100% 100%;
+  color:var(--birthday-ink);
+}
+.menu-screen.birthday-mode:before{
+  content:"6 / 08";
+  position:absolute;
+  right:clamp(1rem,5vw,5rem);
+  top:clamp(1rem,4vw,4rem);
+  z-index:1;
+  color:var(--birthday-ink);
+  font:700 clamp(2rem,5vw,4.5rem)/.8 "Courier New",monospace;
+  letter-spacing:-.12em;
+  transform:rotate(5deg);
+  text-shadow:3px 0 var(--birthday-pink),-3px 0 var(--birthday-cyan);
+}
+.menu-screen.birthday-mode:after{
+  opacity:.13;
+  mix-blend-mode:multiply;
+}
+.birthday-mode .menu-copy{max-width:580px;transform:rotate(-1.2deg)}
+.birthday-mode .eyebrow{
+  display:inline-block;
+  margin-bottom:1.15rem;
+  padding:.38rem .65rem;
+  background:var(--birthday-pink);
+  color:var(--birthday-ink);
+  font:700 .78rem/1 Arial,Helvetica,sans-serif;
+  letter-spacing:.08em;
+  transform:rotate(-3deg);
+  box-shadow:5px 5px 0 var(--birthday-ink);
+}
+.birthday-mode .menu-title{
+  color:var(--birthday-ink);
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(4.4rem,9vw,8.5rem);
+  line-height:.76;
+  letter-spacing:-.11em;
+  text-shadow:4px 3px 0 var(--birthday-cyan);
+}
+.birthday-mode .menu-title span{
+  display:inline-block;
+  color:var(--birthday-pink);
+  transform:translateX(.16em) rotate(-5deg);
+  text-shadow:3px 3px 0 var(--birthday-ink);
+}
+.birthday-mode .menu-title em{
+  display:inline-block;
+  color:var(--birthday-ink);
+  font-family:"Courier New",Courier,monospace;
+  font-size:.68em;
+  letter-spacing:-.15em;
+  transform:translateX(-.03em) rotate(3deg);
+  text-shadow:3px 3px 0 var(--birthday-yellow),-2px -1px 0 var(--birthday-cyan);
+}
+.birthday-mode .intro{
+  max-width:31ch;
+  margin-top:2rem;
+  color:var(--birthday-ink);
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:1rem;
+  font-weight:700;
+  line-height:1.35;
+  border-left:8px solid var(--birthday-yellow);
+  padding-left:1rem;
+}
+.birthday-mode .availability-message{color:var(--birthday-ink);font-family:"Courier New",Courier,monospace;transform:rotate(1deg)}
+.birthday-mode .menu-characters{height:min(76vh,700px);transform:rotate(1.5deg)}
+.birthday-mode .menu-characters:before{
+  content:"Feliz cumpleaños";
+  position:absolute;
+  left:4%;
+  top:15%;
+  z-index:2;
+  padding:.5rem .7rem;
+  background:var(--birthday-yellow);
+  color:var(--birthday-ink);
+  font:700 clamp(.9rem,2vw,1.35rem)/1 "Courier New",monospace;
+  transform:rotate(-8deg);
+  box-shadow:5px 5px 0 var(--birthday-ink);
+}
+.birthday-mode .menu-characters img{filter:drop-shadow(7px 9px 0 var(--birthday-pink)) drop-shadow(12px 14px 0 var(--birthday-ink))}
+.birthday-mode .menu-characters .beliel{filter:drop-shadow(5px 7px 0 var(--birthday-cyan)) drop-shadow(9px 11px 0 var(--birthday-ink))}
+.birthday-mode .menu-actions{transform:rotate(2deg)}
+.birthday-mode .countdown,.birthday-mode .text-button{
+  border-radius:0;
+  background:var(--birthday-ink);
+  color:var(--birthday-paper);
+  box-shadow:5px 5px 0 var(--birthday-pink);
+}
+.birthday-mode .countdown strong{color:var(--birthday-yellow)}
+.birthday-mode .text-button{border:0;font-family:"Courier New",Courier,monospace}
+.birthday-mode .image-button img{filter:drop-shadow(6px 7px 0 var(--birthday-cyan)) drop-shadow(11px 12px 0 var(--birthday-ink))}
+.birthday-mode .image-button:hover,.birthday-mode .image-button:focus-visible{transform:scale(1.08) rotate(-4deg)}
+.birthday-mode .menu-actions:after{
+  content:"Hoy, 6 de agosto";
+  order:3;
+  color:var(--birthday-ink);
+  font:700 .78rem/1 "Courier New",monospace;
+  transform:rotate(-4deg);
+}
+.dialogue-footer .repo-link{order:3}
+@media (max-width:800px){
+  .menu-screen.birthday-mode{grid-template-columns:1fr;grid-template-rows:auto minmax(190px,35vh) auto}
+  .birthday-mode .menu-title{font-size:clamp(3.9rem,17vw,6.4rem)}
+  .birthday-mode .menu-characters{height:min(31vh,235px)}
+  .birthday-mode .menu-characters:before{top:5%;left:0}
+  .birthday-mode .menu-actions:after{align-self:center}
+}
 .dialogue-screen{cursor:default;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .dialogue-card{cursor:pointer;touch-action:manipulation}
 .dialogue-actions,.dialogue-button{cursor:default}

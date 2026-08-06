@@ -4,7 +4,6 @@
   const EVENT_YEAR = 2026;
   const EVENT_MONTH = 7;
   const EVENT_DAY = 6;
-  const NOTICE_KEY = 'beliel-aviso-privacidad';
   const dialogues = [
     'Hola.',
     'Feliz cumpleaños. Espero que este sea un muy buen día para ti. Espero que estés rodeada de todas las personas que te quieren y que te aman. De verdad deseo que esta nueva etapa de tu vida esté llena de cosas bonitas.',
@@ -63,25 +62,20 @@
     const seconds = Math.max(0, Math.floor(milliseconds / 1000));
     return [Math.floor(seconds / 3600), Math.floor(seconds / 60) % 60, seconds % 60].map(value => String(value).padStart(2, '0')).join(':');
   }
-  function showPrivacyNotice(clock){
-    if (!isEventDate(clock) || localStorage.getItem(NOTICE_KEY) === String(EVENT_YEAR)) return;
-    window.alert('Aviso de privacidad\n\nEsta experiencia es personal y su contenido solo debe ser visto por la persona asignada. No compartas esta ventana ni sus capturas.\n\nEsta versión de diseño estará disponible únicamente el 6 de agosto de 2026.');
-    localStorage.setItem(NOTICE_KEY, String(EVENT_YEAR));
-  }
   function updateAvailability(clock = readClock()){
     const available = isEventDate(clock);
     lastAvailability = available;
-    $('menu-eyebrow').textContent = available ? 'Una experiencia especial' : 'Un pequeño juego';
-    $('menu-title-line').textContent = available ? 'Un día' : 'Salta y';
-    $('menu-title-em').textContent = available ? 'para recordar.' : 'diviértete.';
-    $('menu-intro').textContent = available ? 'Una pequeña aventura preparada para compartir un momento especial.' : 'Corre, esquiva obstáculos y recoge girasoles. Juega cuando quieras.';
+    $('menu-screen').classList.toggle('birthday-mode', available);
+    $('menu-eyebrow').textContent = available ? 'Hoy celebramos' : 'Un pequeño juego';
+    $('menu-title-line').textContent = available ? 'Feliz' : 'Salta y';
+    $('menu-title-em').textContent = available ? 'cumpleaños.' : 'diviértete.';
+    $('menu-intro').textContent = available ? 'Que este nuevo año de vida llegue lleno de momentos bonitos, girasoles y motivos para sonreír.' : 'Corre, esquiva obstáculos y recoge girasoles. Juega cuando quieras.';
     document.querySelectorAll('.date-only-control').forEach(control => { control.hidden = !available; });
     $('start-button').hidden = false;
     countdown.classList.toggle('is-hidden', !available);
     if (available) {
       availabilityMessage.textContent = 'Disponible únicamente hoy, 6 de agosto de 2026.';
       countdownValue.textContent = formatCountdown(eventEnd().getTime() - clock.now.getTime());
-      showPrivacyNotice(clock);
     } else {
       availabilityMessage.textContent = 'Juega cuando quieras.';
     }
@@ -96,10 +90,9 @@
   function advanceDialogue(){if(dialogueIndex < dialogues.length-1){dialogueIndex++;renderDialogue();}else{localStorage.setItem('milena-dialogue-seen','1');showScreen('menu');}}
   function startDialogue(){dialogueIndex=0;renderDialogue();showScreen('dialogue');}
   const dialogueCard=$('dialogue-card');
-  if(dialogueCard)dialogueCard.addEventListener('click', e=>{if(e.target.closest('button'))return;advanceDialogue();});
-  document.addEventListener('keydown', e=>{if((e.key===' '||e.key==='Enter')&&!screens.dialogue.classList.contains('is-hidden')){if(e.target.closest('.dialogue-button'))return;e.preventDefault();advanceDialogue();}else if((e.key===' '||e.key==='ArrowUp')&&!screens.game.classList.contains('is-hidden')){e.preventDefault();runner.jump();}});
+  if(dialogueCard)dialogueCard.addEventListener('click', e=>{if(e.target.closest('button, a'))return;advanceDialogue();});
+  document.addEventListener('keydown', e=>{if((e.key===' '||e.key==='Enter')&&!screens.dialogue.classList.contains('is-hidden')){if(e.target.closest('.dialogue-button, .repo-link'))return;e.preventDefault();advanceDialogue();}else if((e.key===' '||e.key==='ArrowUp')&&!screens.game.classList.contains('is-hidden')){e.preventDefault();runner.jump();}});
   $('dialogue-home').addEventListener('click', e=>{e.preventDefault();e.stopPropagation();showScreen('menu');});
-  $('dialogue-hide').addEventListener('click', e=>{e.preventDefault();e.stopPropagation();localStorage.setItem('milena-dialogue-hidden','1');showScreen('menu');});
   $('replay-dialogue').addEventListener('click', e=>{e.stopPropagation();startDialogue();}); $('start-button').addEventListener('click', ()=>{showScreen('game');runner.start();}); $('restart-button').addEventListener('click', ()=>runner.start()); $('menu-button').addEventListener('click', ()=>{runner.stop();showScreen('menu');});
 
   const canvas=$('game-canvas'), ctx=canvas.getContext('2d'), playerElement=$('player-sprite'); let W=0,H=0,dpr=1;

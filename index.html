@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20260723-8" />
+    <link rel="stylesheet" href="styles.css?v=20260806-1" />
     <!-- Privacy-friendly analytics by Plausible -->
     <script async src="https://analytics.ferkalabs.lat/js/pa-2IgsoMbPGMfhkTC892_wI.js"></script>
     <script>
@@ -36,7 +36,7 @@
             <article id="dialogue-card" class="dialogue-card">
               <div class="dialogue-speaker">Joel</div>
               <p id="dialogue-text"></p>
-              <div class="dialogue-footer"><span id="dialogue-count">01 / 28</span><span class="continue-hint">Presiona para continuar <span class="hint-key">↵</span></span></div>
+              <div class="dialogue-footer"><span id="dialogue-count">01 / 28</span><span class="continue-hint">Presiona para continuar <span class="hint-key">↵</span></span><a class="repo-link" href="https://github.com/outage-lost/beliel" target="_blank" rel="noopener noreferrer">Repositorio</a></div>
               <div class="dialogue-actions"><button id="dialogue-home" class="dialogue-button dialogue-home-button" type="button">Volver al inicio</button></div>
             </article>
           </div>
@@ -44,9 +44,9 @@
       </section>
 
       <section id="menu-screen" class="screen menu-screen is-hidden" aria-label="Menú principal">
-        <div class="menu-copy"><p id="menu-eyebrow" class="eyebrow">Un pequeño juego</p><h1><span id="menu-title-line">Salta y</span><br /><em id="menu-title-em">diviértete.</em></h1><p id="menu-intro" class="intro">Corre, esquiva obstáculos y recoge girasoles. Juega cuando quieras.</p><p id="availability-message" class="availability-message" role="status"></p></div>
+        <div class="menu-copy"><p id="menu-eyebrow" class="eyebrow">Un pequeño juego</p><h1 class="menu-title"><span id="menu-title-line">Salta y</span><br /><em id="menu-title-em">diviértete.</em></h1><p id="menu-intro" class="intro">Corre, esquiva obstáculos y recoge girasoles. Juega cuando quieras.</p><p id="availability-message" class="availability-message" role="status"></p></div>
         <div class="menu-characters" aria-hidden="true"><img class="mil-static" src="recursos-visuales/avatar-mil-de-pie-fijo-removebg-preview.png" alt="" /><img class="beliel" src="recursos-visuales/beliel-removebg-preview.png" alt="" /></div>
-        <div class="menu-actions"><div id="countdown" class="countdown is-hidden" aria-live="polite"><span>Disponible durante</span><strong id="countdown-value">00:00:00</strong></div><button id="start-button" class="image-button" aria-label="Comenzar la aventura"><img src="recursos-visuales/boton-de-inicio.png" alt="Comenzar" /></button><button id="replay-dialogue" class="text-button date-only-control">Ver diálogos <span>↗</span></button><button id="dialogue-hide" class="text-button dialogue-hide-button date-only-control" type="button">No volver a mostrar los diálogos</button></div>
+        <div class="menu-actions"><div id="countdown" class="countdown is-hidden" aria-live="polite"><span>Disponible durante</span><strong id="countdown-value">00:00:00</strong></div><button id="start-button" class="image-button" aria-label="Comenzar la aventura"><img src="recursos-visuales/boton-de-inicio.png" alt="Comenzar" /></button><button id="replay-dialogue" class="text-button date-only-control">Ver diálogos <span>↗</span></button></div>
       </section>
 
       <section id="game-screen" class="screen game-screen is-hidden" aria-label="Aventura de Milena">
@@ -56,6 +56,6 @@
         <div id="game-over" class="game-over is-hidden"><p class="eyebrow">La aventura se detuvo</p><h2>¡Casi lo logras!</h2><p>Tu puntuación: <strong id="final-score">0</strong></p><p>Tu récord: <strong id="final-high-score">0</strong></p><div class="overlay-actions"><button id="restart-button" class="solid-button">Reiniciar</button><button id="menu-button" class="ghost-button">Volver al menú</button></div></div>
       </section>
     </main>
-    <script src="app.js?v=20260723-8" defer></script>
+    <script src="app.js?v=20260806-1" defer></script>
   </body>
 </html>
