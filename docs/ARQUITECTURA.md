@@ -23,6 +23,7 @@ La portada pública reutiliza `paisaje-de-fondo-inicio.png`, `avatar-mil-de-pie-
 - `server.js`: servidor HTTP sin dependencias externas.
 - `POST /api/users/register`: crea un usuario nuevo. Rechaza nombres repetidos.
 - `POST /api/users/login`: verifica la frase con `scrypt` y entrega un token de sesión de 30 días.
+- `GET /api/users/me`: valida el token persistido y devuelve la identidad vigente.
 - `GET /api/leaderboard`: devuelve los diez mejores puntajes y el número total de jugadores.
 - `POST /api/scores`: requiere `Authorization: Bearer <token>` y solo conserva el mejor puntaje.
 - `POST /api/runs/start`: crea una sesión de partida de 30 minutos.
@@ -36,10 +37,11 @@ El nombre se compara con una clave en minúsculas. La frase acepta únicamente l
 2. El navegador intenta registrar el nombre.
 3. Si el nombre no existe, se crea y se entrega un token.
 4. Si el nombre ya existe, el mismo formulario intenta iniciar sesión con la frase.
-5. El token y el usuario se guardan en `localStorage` para no preguntar de nuevo en ese navegador.
-6. “Cambiar jugador” borra el token y vuelve a mostrar el formulario.
+5. El token y el usuario se guardan en `localStorage` para no preguntar de nuevo en ese navegador; al cargar la página se valida contra `/api/users/me` antes de habilitar la partida.
+6. Si el token expiró, fue invalidado o la clave del servidor cambió, se borra la sesión local y se muestra el formulario; nunca se permite iniciar una partida con una identidad solo visual.
+7. “Cambiar jugador” borra el token y vuelve a mostrar el formulario.
 
-El token es firmado con HMAC y contiene la identidad y expiración. No depende de una tabla de sesiones en memoria, por lo que reconstruir o reiniciar el contenedor no abre el formulario al perder una partida. Si una sincronización falla, la pantalla de derrota permanece visible con las acciones `REINTENTAR` y `INICIO`.
+El token es firmado con HMAC y contiene la identidad y expiración. No depende de una tabla de sesiones en memoria, por lo que reconstruir o reiniciar el contenedor no abre el formulario al perder una partida. Si una sincronización falla por un error temporal, la pantalla de derrota permanece visible con las acciones `REINTENTAR` y `INICIO`. Si el servidor responde `401`, la partida se detiene, se limpia el token local y se solicita autenticación antes de continuar.
 
 Cada puntaje debe incluir el `runId` emitido al iniciar la partida. El servidor valida que pertenezca al usuario, que no haya expirado y que el score sea plausible para el tiempo transcurrido, con una tolerancia fija. Esto evita el envío directo de récords arbitrarios desde una consola; no sustituye una simulación autoritativa del juego para anti-trampas competitivo.
 

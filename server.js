@@ -74,6 +74,7 @@ const server=http.createServer(async(req,res)=>{
       const candidate=hashPhrase(phrase,user.salt);const valid=crypto.timingSafeEqual(Buffer.from(candidate,'hex'),Buffer.from(user.phraseHash,'hex'));if(!valid)return json(res,401,{error:'El nombre o la frase no coinciden.'});
       return json(res,200,{token:issueSession(user),user:publicUser(user)});
     }
+    if(url.pathname==='/api/users/me'&&req.method==='GET'){const user=authenticated(req);if(!user)return json(res,401,{error:'Tu sesión expiró. Inicia sesión de nuevo.'});return json(res,200,{user:publicUser(user)});}
     if(url.pathname==='/api/runs/start'&&req.method==='POST'){
       const user=authenticated(req);if(!user)return json(res,401,{error:'Tu sesión expiró. Inicia sesión de nuevo.'});return json(res,201,{runId:issueRun(user)});
     }
