@@ -57,7 +57,7 @@ La identidad reduce el uso casual de nombres ajenos. No convierte un juego clien
 
 El juego usa un paso de tiempo (`delta time`) limitado a 32 ms para evitar saltos grandes cuando una pestaña se congela.
 
-- Gravedad base: `2200` ajustada por la escala de viewport.
+- Gravedad base: `2200` en unidades de pantalla; se mantiene estable en móvil para que el tiempo de caída no se alargue artificialmente.
 - Impulso vertical: `930 * sqrt(escala)`, para conservar una proporción similar en móvil.
 - Velocidad horizontal: comienza en `420` y sigue una curva variable hasta `420 * 3.7`, con la velocidad máxima alcanzada alrededor de 1800 puntos.
 - Puntuación: 10 puntos por segundo, multiplicados por los boosts activos.
@@ -78,9 +78,11 @@ Al colisionar se detiene el ciclo, se muestra el score final y aparece el overla
 
 Los GIF no exponen una API fiable para detenerse en el frame actual. Al comenzar un salto, `app.js` dibuja el frame visible del GIF sobre `player-freeze`, un Canvas superpuesto del mismo tamaño, y oculta temporalmente el GIF. El Canvas permanece fijo durante todo el vuelo. Al aterrizar se retira y el GIF vuelve a mostrarse, conservando el movimiento únicamente cuando el avatar corre sobre el suelo.
 
-## Responsive
+## Responsive y controles de pantalla
 
-En pantallas menores de 700 px se aplica una escala de mundo de `0.62` a avatar, obstáculos, velocidad, gravedad e impulso. El HUD reduce información secundaria, la tabla pasa a una columna y las acciones se apilan. El cálculo de distancias siempre usa las dimensiones escaladas reales, no valores de escritorio reutilizados.
+En pantallas menores de 700 px se aplica una escala de mundo de `0.62` al avatar, obstáculos y velocidad. El impulso vertical usa `930 * sqrt(0.62)` mientras la gravedad permanece en `2200`; así la altura del salto disminuye en la misma proporción que el avatar y conserva una relación jugable con los obstáculos. El HUD reduce información secundaria, la tabla pasa a una columna y las acciones se apilan. El cálculo de distancias siempre usa las dimensiones escaladas reales, no valores de escritorio reutilizados.
+
+Desde la pantalla de inicio, `GIRAR PARA JUGAR` solicita al navegador bloquear la orientación en `landscape`. Algunos navegadores móviles, especialmente los que no están en pantalla completa, rechazan esa solicitud; en ese caso se muestra una indicación para girar el dispositivo manualmente. `PANTALLA COMPLETA` usa la Fullscreen API y cambia su etiqueta para permitir salir. Ambas funciones dependen del permiso del navegador y no afectan la partida ni la identidad del jugador.
 
 ## Despliegue
 
