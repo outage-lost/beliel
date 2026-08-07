@@ -1,123 +1,80 @@
 (() => {
   'use strict';
   const A = 'recursos-visuales/';
-  const EVENT_YEAR = 2026;
-  const EVENT_MONTH = 7;
-  const EVENT_DAY = 6;
-  const dialogues = [
-    'Hola.',
-    'Feliz cumpleaños. Espero que este sea un muy buen día para ti. Espero que estés rodeada de todas las personas que te quieren y que te aman. De verdad deseo que esta nueva etapa de tu vida esté llena de cosas bonitas.',
-    'También espero que te hayan gustado los girasoles.Te deseo lo mejor.',
-    'Y, si me permites pedirte una última cosa, no sigas leyendo lo que viene a continuación si crees que esto puede incomodarte o molestarte. Prefiero que cierres esta página aquí y que no veas los siguientes diálogos.',
-    'No sé si llegarás a ver esto. La verdad construí todo esto porque estaba anotado en mi agenda como un proyecto pendiente. Bueno... este y algunos más. Decidí terminar este porque los demás ya no podría hacerlos. Ya no tendría sentido crearlos si ya no había alguien que los recibiera.',
-    'Quería disculparme por todo lo que pasó. Por todo lo que hice, por todo lo que dije y por todas las veces que te fallé.',
-    'Si te soy sincero, no recuerdo casi nada de los últimos meses, pero creo que está bien así. En parte porque hubo momentos en los que realmente no estaba bien, y en parte porque llevo tanto tiempo trabajando hasta desmayarme del cansancio que siento que los días simplemente pasan sin que me dé cuenta. Estoy agotado. Muy agotado.',
-    'No sé qué pienses de mí ahora. No sé cómo estén las cosas en tu vida. Tampoco espero saberlo. Solo quería dejar esto dicho.Quiero pedirte perdón. De verdad.',
-    'No sé por qué hice todo eso si nunca antes me había atrevido. Supongo que siempre hay una primera vez para todo, aunque la mía llegó demasiado tarde. Con el tiempo entendí que gran parte de eso fue un grito desesperado y también el reflejo del enojo que llevaba dentro. Pero nunca fue un enojo hacia ti ni hacia lo que pasó entre nosotros. Estaba enojado conmigo mismo por las decisiones que había tomado, con los errores que cometí y con las consecuencias que hubo.',
-    'La verdad, todavía me da una vergüenza tremenda recordar muchas de esas cosas. Pero no se puede cambiar lo que uno hace. Solo queda aprender a vivir con ello y aceptar las consecuencias de las decisiones que tomó.',
-    'Yo siempre fui consciente de que gran parte de lo que pasó fue culpa mía. Lo sabía mientras estaba ocurriendo. Sabía que estaba haciendo muchas cosas mal. Sabía que necesitabas que estuviera más presente, que te escuchara más, que te dedicara más tiempo. Lo sabía.',
-    'Pero seguí creyendo que primero debía terminar todo lo que estaba construyendo y que después tendría tiempo para arreglar las cosas.',
-    'Pensé que el tiempo me iba a esperar. Y no fue así.Cuando quise reaccionar, ya era demasiado tarde.',
-    'Me arrepiento de muchas cosas. Me arrepiento de no haber tenido el valor de decir lo que sentía cuando todavía podía hacerlo. Me arrepiento de haber pensado que siempre habría otro día para hablar, otro día para cambiar, otro día para hacer las cosas mejor.',
-    'Nunca llegó ese otro día.',
-    'Durante mucho tiempo estuve tan concentrado en intentar construir un futuro que terminé destruyendo una parte muy importante del presente. Quería conseguir algo grande. Quería ser alguien de quien pudieras sentirte orgullosa. Quería darte un futuro mejor.',
-    'Y en ese intento terminé descuidando precisamente a la persona con la que imaginaba compartirlo.',
-    'Eso es algo que voy a cargar siempre.',
-    'Hoy, sinceramente, agradezco que ya no tengas que cargar con nada de lo que fueron mis decisiones. No te lo merecías. Merecías mucha más tranquilidad de la que yo podía darte en ese momento.',
-    'Esto no lo escribo esperando una respuesta, un perdón o una oportunidad. Tampoco espero cambiar nada.',
-    'Solo quería terminar este proyecto y dejar este último mensaje.',
-    'La verdad ya ni siquiera sé qué día es hoy. Estoy demasiado cansado y muy perdido últimamente. Incluso hay momentos en los que siento que ya no recuerdo muchas cosas de esa etapa de mi vida.',
-    'Pero bueno...',
-    'Creo que ya hablé demasiado.',
-    'Feliz cumpleaños.',
-    'Espero que la vida te trate muy bien, que consigas todo lo que te propongas y que seas muy feliz.',
-    'Quiero que sepas que siempre estuve y siempre estaré orgulloso de ti. Por eso sigo trabajando tanto, aunque ya no estés.',
-    'Adiós para siempre.'
-  ];
   const $ = (id) => document.getElementById(id);
-  const screens = {dialogue: $('dialogue-screen'), menu: $('menu-screen'), game: $('game-screen')};
-  const countdown = $('countdown');
-  const countdownValue = $('countdown-value');
-  const availabilityMessage = $('availability-message');
-  let dialogueIndex = 0;
-  let lastAvailability = false;
-  const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-  const clockFormatter = new Intl.DateTimeFormat('es-EC', {
-    timeZone: browserTimeZone,
-    year: 'numeric', month: '2-digit', day: '2-digit',
-    hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23'
-  });
+  const screens = {menu: $('menu-screen'), game: $('game-screen')};
+  const sessionKey = 'beliel-session';
+  let currentUser = null;
 
-  function readClock(){
-    const parts = Object.fromEntries(clockFormatter.formatToParts(new Date()).filter(part => part.type !== 'literal').map(part => [part.type, Number(part.value)]));
-    return {timeZone: browserTimeZone, now: new Date(), ...parts};
-  }
-  function isEventDate(clock){
-    return clock.year === EVENT_YEAR && clock.month === EVENT_MONTH + 1 && clock.day === EVENT_DAY;
-  }
-  function eventEnd(){
-    return new Date(EVENT_YEAR, EVENT_MONTH, EVENT_DAY + 1, 0, 0, 0, 0);
-  }
-  function formatCountdown(milliseconds){
-    const seconds = Math.max(0, Math.floor(milliseconds / 1000));
-    return [Math.floor(seconds / 3600), Math.floor(seconds / 60) % 60, seconds % 60].map(value => String(value).padStart(2, '0')).join(':');
-  }
-  function updateAvailability(clock = readClock()){
-    const available = isEventDate(clock);
-    lastAvailability = available;
-    $('menu-screen').classList.toggle('birthday-mode', available);
-    $('menu-eyebrow').textContent = available ? 'Hoy celebramos' : 'Un pequeño juego';
-    $('menu-title-line').textContent = available ? 'Feliz' : 'Salta y';
-    $('menu-title-em').textContent = available ? 'cumpleaños.' : 'diviértete.';
-    $('menu-intro').textContent = available ? 'Que este nuevo año de vida llegue lleno de momentos bonitos, girasoles y motivos para sonreír.' : 'Corre, esquiva obstáculos y recoge girasoles. Juega cuando quieras.';
-    document.querySelectorAll('.date-only-control').forEach(control => { control.hidden = !available; });
-    $('start-button').hidden = false;
-    countdown.classList.toggle('is-hidden', !available);
-    if (available) {
-      availabilityMessage.textContent = 'Disponible únicamente hoy, 6 de agosto de 2026.';
-      countdownValue.textContent = formatCountdown(eventEnd().getTime() - clock.now.getTime());
-    } else {
-      availabilityMessage.textContent = 'Juega cuando quieras.';
-    }
-  }
-  function refreshClock(){
-    const clock = readClock();
-    if (isEventDate(clock) !== lastAvailability) updateAvailability(clock);
-    else if (lastAvailability) countdownValue.textContent = formatCountdown(eventEnd().getTime() - clock.now.getTime());
-  }
-  function showScreen(name){Object.values(screens).forEach(s=>s.classList.add('is-hidden')); screens[name].classList.remove('is-hidden');}
-  function renderDialogue(){ const text=$('dialogue-text'); text.textContent=dialogues[dialogueIndex]; $('dialogue-count').textContent=`${String(dialogueIndex+1).padStart(2,'0')} / ${dialogues.length}`; }
-  function advanceDialogue(){if(dialogueIndex < dialogues.length-1){dialogueIndex++;renderDialogue();}else{localStorage.setItem('milena-dialogue-seen','1');showScreen('menu');}}
-  function startDialogue(){dialogueIndex=0;renderDialogue();showScreen('dialogue');}
-  const dialogueCard=$('dialogue-card');
-  if(dialogueCard)dialogueCard.addEventListener('click', e=>{if(e.target.closest('button, a'))return;advanceDialogue();});
-  document.addEventListener('keydown', e=>{if((e.key===' '||e.key==='Enter')&&!screens.dialogue.classList.contains('is-hidden')){if(e.target.closest('.dialogue-button, .repo-link'))return;e.preventDefault();advanceDialogue();}else if((e.key===' '||e.key==='ArrowUp')&&!screens.game.classList.contains('is-hidden')){e.preventDefault();runner.jump();}});
-  $('dialogue-home').addEventListener('click', e=>{e.preventDefault();e.stopPropagation();showScreen('menu');});
-  $('replay-dialogue').addEventListener('click', e=>{e.stopPropagation();startDialogue();}); $('start-button').addEventListener('click', ()=>{showScreen('game');runner.start();}); $('restart-button').addEventListener('click', ()=>runner.start()); $('menu-button').addEventListener('click', ()=>{runner.stop();showScreen('menu');});
-
-  const canvas=$('game-canvas'), ctx=canvas.getContext('2d'), playerElement=$('player-sprite'); let W=0,H=0,dpr=1;
-  const runner = {running:false,raf:0,last:0,score:0,high:Number(localStorage.getItem('milena-high-score')||0),sunflowerRecord:Number(localStorage.getItem('milena-sunflower-record')||0),sunflowersCollected:0,speed:330,speedMultiplier:1,viewportScale:1,ground:0,groundOffset:0,groundImage:null,gravity:2000,jumpVelocity:840,jumpDuration:0,jumpHeight:0,compoundWidth:0,jumpTargetDistance:0,lastGroupWidth:0,coyoteTimer:0,player:{x:0,y:0,w:156,h:182,vy:0,onGround:true},obstacles:[],sunflowers:[],sunflowerIn:0,spawnIn:1.3,bonusUntil:0,playerImage:null,playerReady:false,
-    resize(){dpr=Math.min(2,window.devicePixelRatio||1);W=canvas.clientWidth;H=canvas.clientHeight;canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);this.viewportScale=W<=800?.6:1;this.ground=H-Math.min(86,Math.max(58,H*.105));this.player.w=156*this.viewportScale;this.player.h=182*this.viewportScale;this.player.x=Math.max(22,W*.1);if(this.player.onGround)this.player.y=this.ground-this.player.h;},
-    async start(){this.stop();showScreen('game');this.resize();this.score=0;this.sunflowersCollected=0;this.speedMultiplier=1;this.speed=465*this.viewportScale;this.jumpVelocity=this.viewportScale<1?966*Math.sqrt(this.viewportScale):966;this.compoundWidth=(113+106*.5)*this.viewportScale;this.jumpTargetDistance=this.compoundWidth*1.1;this.lastGroupWidth=0;this.jumpDuration=(2*this.jumpVelocity)/this.gravity;this.jumpHeight=(this.jumpVelocity*this.jumpVelocity)/(2*this.gravity);this.obstacles=[];this.sunflowers=[];this.sunflowerIn=2+Math.random()*16;this.spawnIn=2.4;this.bonusUntil=0;this.groundOffset=0;this.coyoteTimer=0;this.player.vy=0;this.player.onGround=true;this.player.y=this.ground-this.player.h;playerElement.classList.add('is-hidden');$('score').textContent='00000';$('speed-value').textContent='1.0×';$('sunflower-count').textContent='0';$('sunflower-record').textContent=String(this.sunflowerRecord);$('high-score').textContent=String(this.high).padStart(5,'0');$('bonus-indicator').classList.add('is-hidden');$('game-over').classList.add('is-hidden');this.running=true;this.last=performance.now();try{if(!this.playerReady)await this.loadPlayer();}catch(e){console.warn('No se pudo cargar el GIF del avatar:',e);}if(!this.running)return;this.loadGround();playerElement.classList.remove('is-hidden');this.syncPlayerElement();this.raf=requestAnimationFrame(t=>this.loop(t));},
-    stop(){this.running=false;cancelAnimationFrame(this.raf);playerElement.classList.add('is-hidden');},
-    async loadPlayer(){const image=playerElement;const ready=new Promise((resolve,reject)=>{if(image.complete&&image.naturalWidth){this.playerImage=image;this.playerReady=true;resolve();return;}image.onload=()=>{if(!image.naturalWidth||!image.naturalHeight)reject(new Error('GIF vacío'));else{this.playerImage=image;this.playerReady=true;resolve();}};image.onerror=reject;});image.src=A+'avatar-runner-rapido-1.6x.gif';await ready;},
-    loadGround(){if(this.groundImage)return;this.groundImage=new Image();this.groundImage.src=A+'paisaje-de-fondo-carrusel-secuencial.png?v=20260721-new';},
-    jump(){if(this.running&&(this.player.onGround||this.coyoteTimer>0)){this.player.vy=-this.jumpVelocity;this.player.onGround=false;this.coyoteTimer=0;}},
-    addObstacle(){const make=(type,x)=>{const img=new Image();img.src=A+(type==='box'?'obstaculo-1-caja.png':'obstaculo-2-mochila-removebg-preview.png');const scale=this.viewportScale,h=(type==='box'?87:96)*scale,w=(type==='box'?113:106)*scale;return{x,y:this.ground-h,w,h,img};};let count=1;if(this.speedMultiplier>=4)count=5+Math.floor(Math.random()*4);else if(this.speedMultiplier>=2)count=3+Math.floor(Math.random()*2);else if(Math.random()<.32)count=2;const firstType=Math.random()<.5?'box':'bag';const first=make(firstType,W+30);this.obstacles.push(first);for(let i=1;i<count;i++){const type=i%2===1?(firstType==='box'?'bag':'box'):firstType;this.obstacles.push(make(type,first.x+first.w*.5*i));}this.lastGroupWidth=first.w*(1+(count-1)*.5);},
-    addSunflower(){const img=new Image();img.src=A+'girasoles-removebg-preview.png';const size=113*1.1*this.viewportScale;this.sunflowers.push({x:W+30,y:this.ground-size,w:size,h:size,img});},
-    obstacleGap(){const tier=Math.floor(this.score/100);const horizontalReach=Math.max(this.jumpTargetDistance,this.speed*this.jumpDuration*1.65);return Math.max(horizontalReach+180,this.lastGroupWidth*1.1+220,450,680-tier*32);},
-    scheduleNextSpawn(){this.addObstacle();this.spawnIn=this.obstacleGap()/this.speed;},
-    speedTier(score){return Math.floor(score/225);},
-    loop(now){if(!this.running)return;const dt=Math.min(.032,(now-this.last)/1000);this.last=now;const multiplier=now<this.bonusUntil?2:1;this.score+=dt*10*multiplier;const tier=this.speedTier(this.score);this.speedMultiplier=Math.min(5,1+tier*.2);this.speed=465*this.speedMultiplier*this.viewportScale;this.groundOffset=(this.groundOffset+this.speed*dt+W)%W;this.spawnIn-=dt;this.sunflowerIn-=dt;if(this.spawnIn<=0)this.scheduleNextSpawn();if(this.sunflowerIn<=0){this.addSunflower();this.sunflowerIn=1.275+Math.random()*15.3;}const p=this.player;if(!p.onGround)this.coyoteTimer=Math.max(0,this.coyoteTimer-dt);p.vy+=this.gravity*dt;p.y+=p.vy*dt;if(p.y>=this.ground-p.h){p.y=this.ground-p.h;p.vy=0;p.onGround=true;this.coyoteTimer=.12;}this.obstacles.forEach(o=>o.x-=this.speed*dt);this.sunflowers.forEach(s=>s.x-=this.speed*dt);this.obstacles=this.obstacles.filter(o=>o.x+o.w>-30);this.sunflowers=this.sunflowers.filter(s=>s.x+s.w>-30);const hitbox={x:p.x+29,y:p.y+15,w:p.w-58,h:p.h-30};for(const o of this.obstacles){if(hitbox.x<o.x+o.w-8&&hitbox.x+hitbox.w>o.x+8&&hitbox.y<o.y+o.h&&hitbox.y+hitbox.h>o.y+8){this.end();return;}}for(let i=this.sunflowers.length-1;i>=0;i--){const s=this.sunflowers[i];if(hitbox.x<s.x+s.w&&hitbox.x+hitbox.w>s.x&&hitbox.y<s.y+s.h&&hitbox.y+hitbox.h>s.y){this.bonusUntil=now+5000;this.sunflowers.splice(i,1);this.sunflowersCollected++;if(this.sunflowersCollected>this.sunflowerRecord){this.sunflowerRecord=this.sunflowersCollected;localStorage.setItem('milena-sunflower-record',String(this.sunflowerRecord));}$('sunflower-count').textContent=String(this.sunflowersCollected);$('sunflower-record').textContent=String(this.sunflowerRecord);}}this.updateBonus(now);$('speed-value').textContent=`${this.speedMultiplier.toFixed(1)}×`;this.syncPlayerElement();this.draw();this.raf=requestAnimationFrame(t=>this.loop(t));},
-    syncPlayerElement(){playerElement.style.left=`${this.player.x}px`;playerElement.style.top=`${this.player.y}px`;playerElement.style.width=`${this.player.w}px`;playerElement.style.height=`${this.player.h}px`;},
-    updateBonus(now){const active=now<this.bonusUntil;const indicator=$('bonus-indicator');indicator.classList.toggle('is-hidden',!active);if(active)$('bonus-time').textContent=`${Math.ceil((this.bonusUntil-now)/1000)}s`;},
-    draw(){ctx.clearRect(0,0,W,H);if(this.groundImage&&this.groundImage.complete&&this.groundImage.naturalWidth){const stripH=Math.min(86,H*.105),sourceH=92;for(let x=-this.groundOffset;x<W;x+=W){ctx.drawImage(this.groundImage,0,this.groundImage.naturalHeight-sourceH,this.groundImage.naturalWidth,sourceH,x,this.ground,W,stripH);}}for(const s of this.sunflowers){if(s.img.complete&&s.img.naturalWidth)ctx.drawImage(s.img,s.x,s.y,s.w,s.h);}for(const o of this.obstacles){if(o.img.complete&&o.img.naturalWidth)ctx.drawImage(o.img,o.x,o.y,o.w,o.h);} $('score').textContent=String(Math.floor(this.score)).padStart(5,'0');},
-    end(){this.running=false;cancelAnimationFrame(this.raf);playerElement.classList.add('is-hidden');$('bonus-indicator').classList.add('is-hidden');const current=Math.floor(this.score);if(current>this.high){this.high=current;localStorage.setItem('milena-high-score',String(this.high));}$('final-score').textContent=current;$('final-high-score').textContent=this.high;$('high-score').textContent=String(this.high).padStart(5,'0');$('game-over').classList.remove('is-hidden');}
+  const api = {
+    async request(path, options = {}) {
+      const headers = {'Content-Type':'application/json', ...(options.headers || {})};
+      const saved = readSession();
+      if (saved?.token) headers.Authorization = `Bearer ${saved.token}`;
+      const response = await fetch(path, {...options, headers});
+      const payload = await response.json();
+      if (!response.ok) { const error = new Error(payload.error || 'No se pudo completar la solicitud.'); error.status = response.status; throw error; }
+      return payload;
+    },
+    register(username, phrase) { return this.request('/api/users/register', {method:'POST',body:JSON.stringify({username,phrase})}); },
+    login(username, phrase) { return this.request('/api/users/login', {method:'POST',body:JSON.stringify({username,phrase})}); },
+    leaderboard() { return this.request('/api/leaderboard'); },
+    score(score) { return this.request('/api/scores', {method:'POST',body:JSON.stringify({score})}); }
   };
-  window.addEventListener('resize',()=>{if(!screens.game.classList.contains('is-hidden')){runner.resize();runner.syncPlayerElement();}}); canvas.addEventListener('pointerdown',()=>runner.jump());
-  updateAvailability(readClock());
-  window.setInterval(refreshClock, 1000);
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshClock(); });
-  window.addEventListener('pageshow', refreshClock);
-  showScreen('menu');
+  function readSession(){try{return JSON.parse(localStorage.getItem(sessionKey));}catch{return null;}}
+  function saveSession(payload){currentUser=payload.user;localStorage.setItem(sessionKey,JSON.stringify({token:payload.token,user:payload.user}));updatePlayerLabels();}
+  function clearSession(){currentUser=null;localStorage.removeItem(sessionKey);updatePlayerLabels();}
+  function updatePlayerLabels(){const name=currentUser?`@${currentUser.username}`:'Sin jugador';$('active-player').textContent=name;$('hud-username').textContent=name;}
+  function showScreen(name){Object.values(screens).forEach((screen)=>screen.classList.add('is-hidden'));screens[name].classList.remove('is-hidden');}
+  function formatScore(value){return String(Math.max(0,Math.floor(value))).padStart(5,'0');}
+  function normalizePhrase(value, trim = false){const cleaned=value.toLowerCase().replace(/[^a-z ]/g,'').replace(/ {2,}/g,' ');return trim?cleaned.trim():cleaned;}
+  function normalizeUsername(value){return value.toLowerCase().replace(/[^a-z0-9_]/g,'').slice(0,16);}
+  function escapeHtml(value){return value.replace(/[&<>'"]/g,(character)=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[character]));}
+
+  async function loadLeaderboard(){
+    try{const data=await api.leaderboard();$('leaderboard-count').textContent=`${data.totalUsers} jugadores`;$('leaderboard-list').innerHTML=data.entries.length?data.entries.map((entry,index)=>`<li><span class="rank">${String(index+1).padStart(2,'0')}</span><span class="leader-name">@${escapeHtml(entry.username)}</span><strong class="leader-score">${formatScore(entry.score)}</strong></li>`).join(''):'<li class="leaderboard-empty">Todavía no hay marcas.</li>';$('leaderboard-status').textContent=currentUser?'Tu mejor marca aparece después de tu primera partida.':'Los mejores puntajes aparecen aquí.';}
+    catch{$('leaderboard-list').innerHTML='<li class="leaderboard-empty">Tabla no disponible.</li>';$('leaderboard-status').textContent='No se pudo conectar con la clasificación.';}
+  }
+
+  const authDialog=$('username-dialog');
+  function requestAuth(){ $('username-input').value='';$('phrase-input').value='';$('username-error').textContent='';if(authDialog.showModal)authDialog.showModal();else authDialog.setAttribute('open','');setTimeout(()=>$('username-input').focus(),50); }
+  $('username-input').addEventListener('input',(event)=>{event.target.value=normalizeUsername(event.target.value);});
+  $('phrase-input').addEventListener('input',(event)=>{event.target.value=normalizePhrase(event.target.value);});
+  $('username-form').addEventListener('submit',async(event)=>{
+    event.preventDefault();const username=normalizeUsername($('username-input').value);const phrase=normalizePhrase($('phrase-input').value,true);$('username-input').value=username;$('phrase-input').value=phrase;
+    if(!/^[a-z0-9_]{3,16}$/.test(username)){ $('username-error').textContent='El nombre necesita entre 3 y 16 caracteres.';return; }
+    if(!/^[a-z]+(?: [a-z]+)+$/.test(phrase)||phrase.length<8){$('username-error').textContent='Escribe una frase de al menos dos palabras, solo con letras minúsculas.';return;}
+    const submit=$('username-form').querySelector('.auth-submit');submit.disabled=true;submit.textContent='COMPROBANDO…';$('username-error').textContent='';
+    try{let result;try{result=await api.register(username,phrase);}catch(error){if(error.status!==409)throw error;result=await api.login(username,phrase);}saveSession(result);authDialog.close();await loadLeaderboard();}
+    catch(error){$('username-error').textContent=error.message;}
+    finally{submit.disabled=false;submit.textContent='CONTINUAR';}
+  });
+  $('change-player').addEventListener('click',()=>{clearSession();requestAuth();});
+
+  const canvas=$('game-canvas');const ctx=canvas.getContext('2d');const playerElement=$('player-sprite');const freezeCanvas=$('player-freeze');const freezeCtx=freezeCanvas.getContext('2d');let W=0,H=0,dpr=1;
+  const runner={
+    running:false,raf:0,last:0,score:0,high:0,speed:420,speedMultiplier:1,viewportScale:1,ground:0,groundOffset:0,groundImage:null,baseGravity:2200,baseJumpVelocity:930,gravity:2200,jumpVelocity:930,coyote:0,jumpBuffer:0,boosts:[],player:{x:0,y:0,w:156,h:182,vy:0,onGround:true},obstacles:[],sunflowers:[],spawnIn:1.6,sunflowerIn:3,
+    resize(){dpr=Math.min(2,window.devicePixelRatio||1);W=canvas.clientWidth;H=canvas.clientHeight;canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);this.viewportScale=W<=700?.62:1;this.baseGravity=2200*this.viewportScale;this.baseJumpVelocity=930*Math.sqrt(this.viewportScale);this.gravity=this.baseGravity;this.jumpVelocity=this.baseJumpVelocity;this.ground=H-Math.min(86,Math.max(58,H*.105));this.player.w=156*this.viewportScale;this.player.h=182*this.viewportScale;this.player.x=Math.max(22,W*.1);if(this.player.onGround)this.player.y=this.ground-this.player.h;},
+    async start(){this.stop();showScreen('game');this.resize();this.score=0;this.high=Number(currentUser?.score||0);this.speedMultiplier=1;this.speed=420*this.viewportScale;this.boosts=[];this.obstacles=[];this.sunflowers=[];this.spawnIn=1.8;this.sunflowerIn=5.2+Math.random()*3.8;this.groundOffset=0;this.coyote=0;this.jumpBuffer=0;this.player.vy=0;this.player.onGround=true;this.player.y=this.ground-this.player.h;this.restoreRunningFrame();playerElement.classList.add('is-hidden');$('score').textContent='00000';$('speed-value').textContent='1.0×';$('sunflower-count').textContent='0';$('high-score').textContent=formatScore(this.high);$('boost-indicator').classList.add('is-hidden');$('game-over').classList.add('is-hidden');this.running=true;this.last=performance.now();try{if(!playerElement.complete||!playerElement.naturalWidth)await new Promise((resolve,reject)=>{playerElement.onload=resolve;playerElement.onerror=reject;});}catch(error){console.warn('No se pudo cargar el avatar.',error);}if(!this.running)return;this.loadGround();playerElement.classList.remove('is-hidden');this.syncPlayerElement();this.raf=requestAnimationFrame((time)=>this.loop(time));},
+    stop(){this.running=false;cancelAnimationFrame(this.raf);this.restoreRunningFrame();playerElement.classList.add('is-hidden');},
+    loadGround(){if(!this.groundImage){this.groundImage=new Image();this.groundImage.src=A+'paisaje-de-fondo-carrusel-secuencial.png';}},
+    freezeFrame(){if(!playerElement.naturalWidth)return;freezeCanvas.width=Math.max(1,Math.round(this.player.w));freezeCanvas.height=Math.max(1,Math.round(this.player.h));freezeCtx.clearRect(0,0,freezeCanvas.width,freezeCanvas.height);freezeCtx.drawImage(playerElement,0,0,freezeCanvas.width,freezeCanvas.height);freezeCanvas.classList.remove('is-hidden');playerElement.classList.add('is-hidden');this.syncPlayerElement();},
+    restoreRunningFrame(){freezeCanvas.classList.add('is-hidden');playerElement.classList.remove('is-hidden');},
+    jumpArcFactor(){return this.speedMultiplier<2?1:1-.10*Math.min(1,(this.speedMultiplier-2)/(3.7-2));},
+    jump(){if(!this.running)return;if(this.player.onGround||this.coyote>0){const factor=this.jumpArcFactor();this.gravity=this.baseGravity/(factor*factor);this.jumpVelocity=this.baseJumpVelocity/factor;this.player.vy=-this.jumpVelocity;this.player.onGround=false;this.coyote=0;this.jumpBuffer=0;this.freezeFrame();}else this.jumpBuffer=.14;},
+    addObstacle(){const type=Math.random()<.5?'box':'bag';const img=new Image();img.src=A+(type==='box'?'obstaculo-1-caja.png':'obstaculo-2-mochila-removebg-preview.png');const scale=this.viewportScale;const h=(type==='box'?87:96)*scale,w=(type==='box'?113:106)*scale;this.obstacles.push({x:W+30,y:this.ground-h,w,h,img});},
+    addSunflower(){const img=new Image();img.src=A+'girasoles-removebg-preview.png';const size=113*1.1*this.viewportScale;this.sunflowers.push({x:W+30,y:this.ground-size,w:size,h:size,img});},
+    nextObstacleDelay(){const maxWidth=115*this.viewportScale;const airtime=(2*this.jumpVelocity)/this.gravity;const reachable=this.speed*airtime;return Math.max(520*this.viewportScale,reachable+maxWidth+240*this.viewportScale)/this.speed;},
+    activeBoosts(now){this.boosts=this.boosts.filter((boost)=>boost.expires>now);return this.boosts.length;},
+    updateBoostHud(now){const count=this.activeBoosts(now);const indicator=$('boost-indicator');indicator.classList.toggle('is-hidden',count===0);if(count){const nearest=Math.min(...this.boosts.map((boost)=>boost.expires-now));$('boost-value').textContent=`${Math.min(16,2**count).toFixed(1)}×`;$('boost-time').textContent=`${Math.ceil(nearest/1000)}s`;}},
+    loop(now){if(!this.running)return;const dt=Math.min(.032,(now-this.last)/1000);this.last=now;const progress=Math.min(1,this.score/1800);this.speedMultiplier=1+2.7*Math.pow(progress,.72);this.speed=420*this.speedMultiplier*this.viewportScale;const multiplier=Math.min(16,2**this.activeBoosts(now));this.score+=dt*10*multiplier;this.groundOffset=(this.groundOffset+this.speed*dt+W)%W;this.spawnIn-=dt;this.sunflowerIn-=dt;if(this.spawnIn<=0){this.addObstacle();this.spawnIn=this.nextObstacleDelay();}if(this.sunflowerIn<=0){this.addSunflower();this.sunflowerIn=5.2+Math.random()*7.4;}
+      const p=this.player;if(!p.onGround){this.coyote=Math.max(0,this.coyote-dt);}this.jumpBuffer=Math.max(0,this.jumpBuffer-dt);p.vy+=this.gravity*dt;p.y+=p.vy*dt;if(p.y>=this.ground-p.h){p.y=this.ground-p.h;p.vy=0;if(!p.onGround){this.restoreRunningFrame();this.gravity=this.baseGravity;this.jumpVelocity=this.baseJumpVelocity;}p.onGround=true;this.coyote=.11;if(this.jumpBuffer>0)this.jump();}
+      this.obstacles.forEach((o)=>o.x-=this.speed*dt);this.sunflowers.forEach((s)=>s.x-=this.speed*dt);this.obstacles=this.obstacles.filter((o)=>o.x+o.w>-30);this.sunflowers=this.sunflowers.filter((s)=>s.x+s.w>-30);const hitbox={x:p.x+p.w*.2,y:p.y+p.h*.1,w:p.w*.6,h:p.h*.82};if(this.obstacles.some((o)=>hitbox.x<o.x+o.w*.9&&hitbox.x+hitbox.w>o.x+o.w*.1&&hitbox.y<o.y+o.h&&hitbox.y+hitbox.h>o.y+o.h*.08)){this.end();return;}for(let i=this.sunflowers.length-1;i>=0;i--){const s=this.sunflowers[i];if(hitbox.x<s.x+s.w&&hitbox.x+hitbox.w>s.x&&hitbox.y<s.y+s.h&&hitbox.y+hitbox.h>s.y){this.sunflowers.splice(i,1);this.boosts.push({expires:now+10000});$('sunflower-count').textContent=String(Number($('sunflower-count').textContent)+1);}}
+      this.updateBoostHud(now);$('speed-value').textContent=`${this.speedMultiplier.toFixed(1)}×`;$('score').textContent=formatScore(this.score);$('high-score').textContent=formatScore(Math.max(this.high,this.score));this.syncPlayerElement();this.draw();this.raf=requestAnimationFrame((time)=>this.loop(time));},
+    syncPlayerElement(){const left=`${this.player.x}px`,top=`${this.player.y}px`,width=`${this.player.w}px`,height=`${this.player.h}px`;[playerElement,freezeCanvas].forEach((element)=>{element.style.left=left;element.style.top=top;element.style.width=width;element.style.height=height;});},
+    draw(){ctx.clearRect(0,0,W,H);const stripH=Math.min(102,H*.13),sourceH=120;ctx.fillStyle='#304d3c';ctx.fillRect(0,this.ground,W,H-this.ground);if(this.groundImage?.complete&&this.groundImage.naturalWidth){for(let x=-this.groundOffset;x<W;x+=W)ctx.drawImage(this.groundImage,0,this.groundImage.naturalHeight-sourceH,this.groundImage.naturalWidth,sourceH,x,this.ground,W,stripH);}else{ctx.fillStyle='#657b58';ctx.fillRect(0,this.ground,W,H-this.ground);ctx.fillStyle='#304d3c';ctx.fillRect(0,this.ground,W,4);}this.sunflowers.forEach((s)=>{if(s.img.complete&&s.img.naturalWidth)ctx.drawImage(s.img,s.x,s.y,s.w,s.h);});this.obstacles.forEach((o)=>{if(o.img.complete&&o.img.naturalWidth)ctx.drawImage(o.img,o.x,o.y,o.w,o.h);});},
+    async end(){this.running=false;cancelAnimationFrame(this.raf);this.restoreRunningFrame();playerElement.classList.add('is-hidden');const current=Math.floor(this.score);$('final-score').textContent=current;$('high-score').textContent=formatScore(Math.max(this.high,current));$('game-over-player').textContent=currentUser?`@${currentUser.username}`:'runner';$('score-result').textContent='Guardando tu mejor marca…';$('game-over').classList.remove('is-hidden');try{const result=await api.score(current);this.high=result.user.score;$('high-score').textContent=formatScore(this.high);$('score-result').textContent=result.updated?'Nueva marca global registrada.':'Tu marca global no cambió.';loadLeaderboard();}catch(error){$('score-result').textContent=error.status===401?'La sesión expiró; la partida terminó sin sincronizarse.':error.message;}}
+  };
+  $('start-button').addEventListener('click',()=>currentUser?runner.start():requestAuth());$('restart-button').addEventListener('click',()=>runner.start());$('menu-button').addEventListener('click',()=>{runner.stop();showScreen('menu');loadLeaderboard();});canvas.addEventListener('pointerdown',()=>runner.jump());document.addEventListener('keydown',(event)=>{if(!screens.game.classList.contains('is-hidden')&&(event.key===' '||event.key==='ArrowUp')){event.preventDefault();runner.jump();}});window.addEventListener('resize',()=>{if(!screens.game.classList.contains('is-hidden')){runner.resize();runner.syncPlayerElement();}});
+  const saved=readSession();if(saved?.token&&saved.user){currentUser=saved.user;updatePlayerLabels();}else requestAuth();loadLeaderboard();
 })();

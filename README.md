@@ -1,4 +1,4 @@
-# Beliel · Una experiencia especial
+# Beliel · Runner arcade
 
 ```text
                                     .%%%%      %=
@@ -37,11 +37,9 @@ Esta aventura guarda un último deseo: que seas feliz. No importa cuánto tiempo
 
 ## Sobre el proyecto
 
-Beliel es una experiencia web interactiva que combina una secuencia de diálogos, personajes ilustrados, girasoles y un minijuego runner. La experiencia está pensada como un contenido personal, con una presentación especial disponible únicamente el 6 de agosto de 2026.
+Beliel es un runner arcade web que reutiliza los personajes, obstáculos, girasoles y paisajes originales. El juego usa delta time, gravedad y velocidad progresiva, salto con trayectoria parabólica, separación segura entre obstáculos y detección de colisiones con hitbox reducida.
 
-La aplicación consulta la zona horaria, la fecha y la hora actuales del navegador cada vez que se abre. Con esa información determina la vista activa, actualiza el contador en tiempo real y mantiene la disponibilidad de los diálogos exclusivamente durante el 6 de agosto, desde las 00:00 hasta las 23:59.
-
-El aviso de privacidad se muestra una sola vez por navegador. El contenido especial debe ser visto únicamente por la persona asignada y no debe compartirse, copiarse ni difundirse.
+La vista pública solicita el nombre y una frase secreta solo la primera vez en cada navegador. En visitas posteriores reutiliza el token local. En otro navegador se inicia sesión con el mismo nombre y frase. La frase nunca se guarda en el navegador ni en texto plano: el servidor la protege con `scrypt` y sal aleatoria. Los usuarios y puntajes viven en SQLite; los campos sensibles se cifran con AES-256-GCM usando `BELIEL_DATA_KEY`.
 
 ## Clonar el repositorio
 
@@ -74,7 +72,9 @@ Con el despliegue local activo, abre:
 http://localhost:18080
 ```
 
-En producción, publica el puerto del contenedor detrás de un proxy con HTTPS. La configuración de Nginx incluye encabezados de seguridad y respeta `X-Forwarded-Proto` cuando se utiliza detrás de Cloudflare u otro proxy inverso.
+En producción, publica el puerto del contenedor detrás de un proxy con HTTPS. El servicio Node incluye los encabezados básicos de seguridad y sirve tanto la interfaz como la API.
+
+El despliegue crea el volumen Docker `beliel_leaderboard`; consérvalo para no perder usuarios y puntajes. Para producción debes definir una clave larga y secreta en `BELIEL_DATA_KEY`; el valor incluido en Compose solo sirve para desarrollo local.
 
 ## Detener y reiniciar el contenedor
 
@@ -104,15 +104,20 @@ docker compose up -d --build
 
 ## Controles
 
-- Avanza los diálogos haciendo clic, pulsando `Enter` o la barra espaciadora.
 - En el runner, salta con `Espacio`, `↑` o tocando la pantalla.
-- El récord y los girasoles recogidos se guardan en el almacenamiento local del navegador.
+- La mejor marca se sincroniza con el servidor al terminar una partida.
+- La ruta `/especial.html` conserva la separación de la experiencia personal: solo se habilita el 6 de agosto de 2026 en la zona horaria de Guayaquil.
 
 ## Estructura
 
 - `index.html`: pantallas, controles, metadatos y analítica.
 - `styles.css`: estilos, animaciones y componentes de la interfaz.
-- `app.js`: detección de fecha, contador, navegación de diálogos, persistencia y lógica del minijuego.
-- `nginx.conf`: servidor web y encabezados de seguridad.
+- `app.js`: registro de usuario, clasificación global y lógica del minijuego.
+- `server.js`: servidor HTTP, SQLite, cifrado y API de usuarios/puntajes.
+- `package.json`: configuración mínima de Node.js.
+- `nginx.conf`: configuración anterior conservada como referencia; el Dockerfile actual usa Node.
 - `docker-compose.yml`: configuración de despliegue local y producción.
 - `recursos-visuales/`: sprites, fondos y elementos gráficos.
+- `especial.html`, `special.js`, `special.css`: vista especial aislada y protegida por fecha.
+
+La documentación técnica completa está en [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md).

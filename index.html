@@ -2,60 +2,45 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#304d3c" />
-    <meta name="description" content="Una pequeña aventura para celebrar un día especial." />
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+    <meta name="description" content="Beliel: runner arcade y tabla global de posiciones." />
     <link rel="icon" type="image/png" href="recursos-visuales/beliel-removebg-preview.png" />
-    <link rel="apple-touch-icon" href="recursos-visuales/beliel-removebg-preview.png" />
-    <title>Una experiencia especial</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20260806-1" />
-    <!-- Privacy-friendly analytics by Plausible -->
-    <script async src="https://analytics.ferkalabs.lat/js/pa-2IgsoMbPGMfhkTC892_wI.js"></script>
-    <script>
-      window.plausible = window.plausible || function () { (plausible.q = plausible.q || []).push(arguments); };
-      plausible.init = plausible.init || function (i) { plausible.o = i || {}; };
-      plausible.init();
-    </script>
+    <link rel="stylesheet" href="styles.css?v=20260807-1" />
+    <title>Beliel / Runner arcade</title>
   </head>
   <body>
-    <script>
-      if (location.protocol === 'http:' && !['localhost', '127.0.0.1'].includes(location.hostname)) {
-        location.replace('https:' + location.href.slice(5));
-      }
-    </script>
-    <main id="app" aria-live="polite">
-      <section id="dialogue-screen" class="screen dialogue-screen" aria-label="Carta de Joel">
-        <div class="dialogue-frame">
-          <div class="letter-mark">Para Milena <span>·</span> 20</div>
-          <div class="dialogue-stage">
-            <div class="npc-wrap"><img src="recursos-visuales/npc-joel-avatar-para-dialogos.png" alt="Avatar de Joel" /></div>
-            <article id="dialogue-card" class="dialogue-card">
-              <div class="dialogue-speaker">Joel</div>
-              <p id="dialogue-text"></p>
-              <div class="dialogue-footer"><span id="dialogue-count">01 / 28</span><span class="continue-hint">Presiona para continuar <span class="hint-key">↵</span></span></div>
-              <div class="dialogue-actions"><button id="dialogue-home" class="dialogue-button dialogue-home-button" type="button">Volver al inicio</button><a class="repo-link" href="https://github.com/outage-lost/beliel" target="_blank" rel="noopener noreferrer">Repositorio</a></div>
-            </article>
-          </div>
+    <main id="app">
+      <section id="menu-screen" class="screen menu-screen" aria-label="Inicio de Beliel">
+        <div class="menu-topbar"><span class="brand">Beliel <span>/ aventura</span></span><span class="status-dot">Juego abierto</span></div>
+        <div class="menu-copy">
+          <p class="eyebrow">Una pequeña aventura</p>
+          <h1>Salta y<br /><em>diviértete.</em></h1>
+          <p class="intro">Corre, esquiva obstáculos, recoge girasoles y deja tu mejor marca en la tabla global.</p>
+          <div class="menu-actions"><button id="start-button" class="primary-button" type="button"><span>COMENZAR</span><b>IR</b></button><a class="special-link" href="especial.html">Ver experiencia especial</a></div>
         </div>
-      </section>
-
-      <section id="menu-screen" class="screen menu-screen is-hidden" aria-label="Menú principal">
-        <div class="menu-copy"><p id="menu-eyebrow" class="eyebrow">Un pequeño juego</p><h1 class="menu-title"><span id="menu-title-line">Salta y</span><br /><em id="menu-title-em">diviértete.</em></h1><p id="menu-intro" class="intro">Corre, esquiva obstáculos y recoge girasoles. Juega cuando quieras.</p><p id="availability-message" class="availability-message" role="status"></p></div>
         <div class="menu-characters" aria-hidden="true"><img class="mil-static" src="recursos-visuales/avatar-mil-de-pie-fijo-removebg-preview.png" alt="" /><img class="beliel" src="recursos-visuales/beliel-removebg-preview.png" alt="" /></div>
-        <div class="menu-actions"><div id="countdown" class="countdown is-hidden" aria-live="polite"><span>Disponible durante</span><strong id="countdown-value">00:00:00</strong></div><button id="start-button" class="image-button" aria-label="Comenzar la aventura"><img src="recursos-visuales/boton-de-inicio.png" alt="Comenzar" /></button><button id="replay-dialogue" class="text-button date-only-control">Ver diálogos <span>↗</span></button></div>
+        <aside class="leaderboard-card" aria-labelledby="leaderboard-title">
+          <div class="card-heading"><div><span class="card-kicker">CLASIFICACIÓN GLOBAL</span><h2 id="leaderboard-title">Top runners</h2></div><span id="leaderboard-count">—</span></div>
+          <ol id="leaderboard-list" class="leaderboard-list"><li class="leaderboard-empty">Cargando marcas…</li></ol>
+          <p id="leaderboard-status" class="leaderboard-status" role="status">Los mejores puntajes aparecen aquí.</p>
+        </aside>
+        <div class="menu-footer"><span>ESPACIO / ↑ / TOQUE · SALTAR</span><button id="change-player" type="button">Cambiar jugador</button><span id="active-player">Sin jugador</span></div>
       </section>
 
-      <section id="game-screen" class="screen game-screen is-hidden" aria-label="Aventura de Milena">
-        <div class="game-hud"><div class="hud-pill"><span class="hud-label">PUNTOS</span><strong id="score">00000</strong></div><div class="hud-pill speed-pill"><span class="hud-label">VELOCIDAD</span><strong id="speed-value">1.0×</strong></div><div class="hud-pill sunflower-stat"><span class="hud-label">GIRASOLES</span><strong id="sunflower-count">0</strong><small>récord <span id="sunflower-record">0</span></small></div><div id="bonus-indicator" class="hud-pill bonus-pill is-hidden"><span class="hud-label">BONUS</span><strong>×2 <small id="bonus-time">5s</small></strong></div><div class="hud-pill high"><span class="hud-label">RÉCORD</span><strong id="high-score">00000</strong></div></div>
-        <canvas id="game-canvas" aria-label="Minijuego: salta los obstáculos"></canvas><img id="player-sprite" class="player-sprite is-hidden" src="recursos-visuales/avatar-runner-rapido-1.6x.gif" alt="Mil corriendo" draggable="false" />
-        <div class="game-tip">Espacio / ↑ / toca para saltar</div>
-        <div id="game-over" class="game-over is-hidden"><p class="eyebrow">La aventura se detuvo</p><h2>¡Casi lo logras!</h2><p>Tu puntuación: <strong id="final-score">0</strong></p><p>Tu récord: <strong id="final-high-score">0</strong></p><div class="overlay-actions"><button id="restart-button" class="solid-button">Reiniciar</button><button id="menu-button" class="ghost-button">Volver al menú</button></div></div>
+      <section id="game-screen" class="screen game-screen is-hidden" aria-label="Partida de Beliel">
+        <div class="game-hud"><div class="hud-player"><span>JUGADOR</span><strong id="hud-username">—</strong></div><div class="hud-pill"><span>PUNTOS</span><strong id="score">00000</strong></div><div class="hud-pill"><span>RITMO</span><strong id="speed-value">1.0×</strong></div><div class="hud-pill sunflower-stat"><span>GIRASOLES</span><strong id="sunflower-count">0</strong></div><div id="boost-indicator" class="hud-pill boost-pill is-hidden"><span>BOOST</span><strong id="boost-value">2.0×</strong><small id="boost-time">10s</small></div><div class="hud-pill high"><span>MEJOR</span><strong id="high-score">00000</strong></div></div>
+        <canvas id="game-canvas" aria-label="Minijuego runner"></canvas><img id="player-sprite" class="player-sprite is-hidden" src="recursos-visuales/avatar-runner-rapido-1.6x.gif" alt="Mil corriendo" draggable="false" /><canvas id="player-freeze" class="player-freeze is-hidden" aria-hidden="true"></canvas>
+        <div class="game-tip">ESPACIO / ↑ / TOQUE PARA SALTAR</div>
+        <div id="game-over" class="game-over is-hidden"><p class="eyebrow">Partida terminada</p><h2>Buen intento, <span id="game-over-player">runner</span>.</h2><p class="result-line">Puntuación <strong id="final-score">0</strong></p><p id="score-result" class="score-result"></p><div class="overlay-actions"><button id="restart-button" class="primary-button" type="button">REINTENTAR</button><button id="menu-button" class="ghost-button" type="button">INICIO</button></div></div>
       </section>
     </main>
-    <script src="app.js?v=20260806-1" defer></script>
+
+    <dialog id="username-dialog" class="username-dialog" aria-labelledby="username-title">
+      <div class="dialog-mark">BELIEL / AVENTURA</div><h2 id="username-title">¿Quién va a<br /><em>jugar hoy?</em></h2><p id="auth-copy">Elige un nombre y una frase secreta. El nombre debe ser único; la frase te permitirá iniciar sesión desde otro navegador.</p>
+      <form id="username-form"><label for="username-input">Nombre de usuario</label><div class="input-row"><span>@</span><input id="username-input" name="username" autocomplete="username" maxlength="16" minlength="3" required placeholder="tu_nombre" /></div><label for="phrase-input">Frase secreta</label><div class="input-row"><span>Frase</span><input id="phrase-input" name="phrase" type="text" autocomplete="off" maxlength="80" minlength="8" required placeholder="mi frase secreta" /></div><p class="form-help">Solo letras minúsculas y espacios. La frase se limpia automáticamente.</p><button class="auth-submit" type="submit">CONTINUAR</button><p id="username-error" class="form-error" role="alert"></p></form>
+    </dialog>
+    <div id="dialog-backdrop" class="dialog-backdrop is-hidden"></div>
+    <script src="app.js?v=20260807-1" defer></script>
   </body>
 </html>
