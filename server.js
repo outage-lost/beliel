@@ -82,6 +82,6 @@ const server=http.createServer(async(req,res)=>{
     }
     if(req.method!=='GET'&&req.method!=='HEAD')return json(res,405,{error:'Método no permitido.'});
     const pathname=url.pathname;const assetPath=pathname.startsWith('/recursos-visuales/')?pathname.slice(1):null;if(!publicFiles.has(pathname)&&!assetPath)return res.writeHead(404,securityHeaders()).end();let filePath=path.normalize(path.join(root,pathname==='/'?'index.html':pathname));const relative=path.relative(root,filePath);if(relative.startsWith('..')||path.isAbsolute(relative))return res.writeHead(403,securityHeaders()).end();if(!fs.existsSync(filePath)||fs.statSync(filePath).isDirectory())return res.writeHead(404,securityHeaders()).end();res.writeHead(200,{'Content-Type':mime[path.extname(filePath)]||'application/octet-stream',...securityHeaders()});if(req.method==='HEAD')return res.end();fs.createReadStream(filePath).pipe(res);
-  }catch(error){json(res,500,{error:error.message||'Error interno.'});}
+  }catch(error){console.error(error);json(res,500,{error:nodeEnv==='production'?'Error interno del servidor.':(error.message||'Error interno.')});}
 });
 server.listen(port,'0.0.0.0',()=>console.log(`Beliel listening on ${port}`));
