@@ -63,7 +63,8 @@ El juego usa un paso de tiempo (`delta time`) limitado a 32 ms para evitar salto
 - Coyote time: `110 ms`, permite saltar justo después de abandonar el borde.
 - Jump buffer: `140 ms`, guarda una pulsación justo antes de tocar el suelo y permite encadenar el siguiente salto al aterrizar.
 - Separación: cada nuevo obstáculo calcula su espera usando el tiempo completo de vuelo, la distancia horizontal alcanzable, el ancho del obstáculo y un margen adicional. No se usa una brecha que disminuya con el puntaje.
-- Piso: el Canvas pinta una franja inferior con el tramo de suelo del paisaje y la desplaza mediante `groundOffset`; mientras carga la imagen mantiene un suelo de respaldo visible.
+- Piso: el Canvas pinta directamente la franja inferior de `paisaje-de-fondo-carrusel-secuencial.png` y la desplaza mediante `groundOffset`. No se dibuja un bloque verde alternativo: el suelo visual pertenece al paisaje original.
+- Obstáculos compuestos: desde `2.0×` aparecen dos piezas, desde `2.6×` tres y desde `3.2×` cuatro. Alternan cajas y mochilas y se superponen horizontalmente al 50% de su ancho, formando una aglomeración ancha sin hacerla más alta. La espera del siguiente grupo incluye el ancho real del conglomerado.
 - Girasoles: aparecen con menor frecuencia, aproximadamente cada 5.2–12.6 segundos. Cada girasol agrega un boost independiente de 10 segundos. Los boosts activos se acumulan como `2^n` y se muestran en el HUD junto con el tiempo restante del boost que está más próximo a terminar; la interfaz limita la indicación visual a 16×.
 
 El runner no permite doble salto. Un segundo salto solo ocurre después de aterrizar, o mediante la pulsación almacenada del jump buffer.
@@ -86,3 +87,9 @@ docker compose ps
 ```
 
 El contenedor usa Node 22 y sirve la interfaz y la API en el mismo puerto. El volumen `beliel_leaderboard` debe conservarse entre despliegues. `nginx.conf` pertenece a la etapa estática anterior y no participa en el Dockerfile actual.
+
+## Spotify y letras
+
+La API oficial de Spotify puede entregar la pista que el usuario está reproduciendo mediante `GET /me/player/currently-playing`, solicitando el scope `user-read-currently-playing`. Spotify no entrega las letras de la canción mediante su Web API. Además, sus políticas indican que no se deben sincronizar grabaciones con contenido visual. Por eso Beliel no implementa un karaoke de letras con Spotify directamente.
+
+Para una integración permitida de metadatos se necesitarían un `client_id`, una URL de redirección registrada y consentimiento OAuth del usuario. Para mostrar letras haría falta, además, un proveedor de letras con licencia explícita para ese uso y revisar sus condiciones de sincronización. Hasta contar con esos datos y permisos, la integración no se activa ni se simula con letras inventadas.
