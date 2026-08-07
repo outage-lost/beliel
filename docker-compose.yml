@@ -6,11 +6,21 @@ services:
     restart: unless-stopped
     ports:
       # Dockploy puede cambiar BELIEL_PORT desde las variables del servicio.
-      - "${BELIEL_PORT:-18080}:80"
+      - "127.0.0.1:${BELIEL_PORT:-18080}:80"
+    expose:
+      - "80"
     volumes:
       - beliel_leaderboard:/app/data
     environment:
-      BELIEL_DATA_KEY: "${BELIEL_DATA_KEY:-beliel-local-development-key-change-in-production}"
+      NODE_ENV: "${NODE_ENV:-development}"
+      BELIEL_DATA_KEY: "${BELIEL_DATA_KEY}"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1/ || exit 1"]
       interval: 30s

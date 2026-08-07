@@ -74,7 +74,9 @@ http://localhost:18080
 
 En producción, publica el puerto del contenedor detrás de un proxy con HTTPS. El servicio Node incluye los encabezados básicos de seguridad y sirve tanto la interfaz como la API.
 
-El despliegue crea el volumen Docker `beliel_leaderboard`; consérvalo para no perder usuarios y puntajes. Para producción debes definir una clave larga y secreta en `BELIEL_DATA_KEY`; el valor incluido en Compose solo sirve para desarrollo local.
+En Dokploy configura el dominio usando Traefik y el puerto interno `80`; el puerto local `18080` se enlaza únicamente a `127.0.0.1` para no exponer un bypass público. Define `NODE_ENV=production` y `BELIEL_DATA_KEY` como secreto en las variables de Dokploy. Consulta [.env.example](.env.example) para el formato local.
+
+El despliegue crea el volumen Docker `beliel_leaderboard`; consérvalo para no perder usuarios y puntajes.
 
 ## Detener y reiniciar el contenedor
 

@@ -25,6 +25,7 @@ La portada pública reutiliza `paisaje-de-fondo-inicio.png`, `avatar-mil-de-pie-
 - `POST /api/users/login`: verifica la frase con `scrypt` y entrega un token de sesión de 30 días.
 - `GET /api/leaderboard`: devuelve los diez mejores puntajes y el número total de jugadores.
 - `POST /api/scores`: requiere `Authorization: Bearer <token>` y solo conserva el mejor puntaje.
+- `POST /api/runs/start`: crea una sesión de partida de 30 minutos.
 - `data/beliel.sqlite`: persistencia local dentro del volumen `beliel_leaderboard`.
 
 El nombre se compara con una clave en minúsculas. La frase acepta únicamente letras ASCII minúsculas y espacios entre palabras; el navegador la convierte y limpia al escribir. El backend vuelve a validar todo, porque la validación del cliente no es una frontera de seguridad.
@@ -39,6 +40,8 @@ El nombre se compara con una clave en minúsculas. La frase acepta únicamente l
 6. “Cambiar jugador” borra el token y vuelve a mostrar el formulario.
 
 El token es firmado con HMAC y contiene la identidad y expiración. No depende de una tabla de sesiones en memoria, por lo que reconstruir o reiniciar el contenedor no abre el formulario al perder una partida. Si una sincronización falla, la pantalla de derrota permanece visible con las acciones `REINTENTAR` y `INICIO`.
+
+Cada puntaje debe incluir el `runId` emitido al iniciar la partida. El servidor valida que pertenezca al usuario, que no haya expirado y que el score sea plausible para el tiempo transcurrido, con una tolerancia fija. Esto evita el envío directo de récords arbitrarios desde una consola; no sustituye una simulación autoritativa del juego para anti-trampas competitivo.
 
 La frase no se puede recuperar. Si se pierde, el usuario debe utilizar otro nombre; no hay restablecimiento implementado. Al arrancar, esta versión elimina deliberadamente `data/leaderboard.json` si existe para descartar los usuarios de la versión anterior; no se realiza migración de esos datos.
 
@@ -86,7 +89,23 @@ docker compose up -d --build
 docker compose ps
 ```
 
-El contenedor usa Node 22 y sirve la interfaz y la API en el mismo puerto. El volumen `beliel_leaderboard` debe conservarse entre despliegues. `nginx.conf` pertenece a la etapa estática anterior y no participa en el Dockerfile actual.
+El contenedor usa Node 22 y sirve la interfaz y la API en el mismo puerto. Corre como usuario sin privilegios, con `no-new-privileges`, sin capabilities Linux y filesystem de solo lectura; solo `/app/data` y `/tmp` son escribibles.
+
+En local, `BELIEL_PORT` usa `18080` y se enlaza a `127.0.0.1`, no a todas las interfaces. En Dokploy, el dominio debe apuntar al puerto interno `80` mediante Traefik; Dokploy recomienda `expose` para evitar publicar el puerto en el host. El puerto `18080` no aparece ocupado por otra aplicación en la auditoría realizada sobre el `docker ps` proporcionado.
+
+En producción define obligatoriamente `NODE_ENV=production` y un `BELIEL_DATA_KEY` largo y aleatorio en las variables de entorno de Dokploy. El Compose no incluye una clave de producción. Dokploy inyecta las variables referenciadas por `${...}` desde su entorno configurado.
+
+El volumen `beliel_leaderboard` debe conservarse entre despliegues. `nginx.conf` pertenece a la etapa estática anterior y no participa en el Dockerfile actual.
+
+## Auditoría de seguridad
+
+- CSP, `X-Frame-Options`, `Permissions-Policy`, `Referrer-Policy` y `nosniff` se envían desde el servidor.
+- La API limita solicitudes por ruta/IP en ventanas de un minuto y rechaza cuerpos mayores de 10 KB.
+- El servidor no habilita CORS; la API solo está pensada para el mismo origen.
+- La ruta de archivos usa `path.relative` para impedir escapes fuera de la raíz pública.
+- No se sirven `data/`, archivos ocultos ni secretos como recursos públicos.
+- SQLite guarda valores sensibles cifrados; el secreto de cifrado no debe entrar al repositorio ni al Dockerfile.
+- Los límites de score reducen manipulación, pero una defensa anti-cheat completa requeriría ejecutar la simulación en servidor.
 
 ## Spotify y letras
 
