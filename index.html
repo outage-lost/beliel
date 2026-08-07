@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#304d3c" />
     <meta name="description" content="Beliel: runner arcade y tabla global de posiciones." />
     <link rel="icon" type="image/png" href="recursos-visuales/beliel-removebg-preview.png" />
-    <link rel="stylesheet" href="styles.css?v=20260807-2" />
+    <link rel="stylesheet" href="styles.css?v=20260807-3" />
     <title>Beliel / Runner arcade</title>
   </head>
   <body>
@@ -18,7 +18,7 @@
           <h1>Salta y<br /><em>diviértete.</em></h1>
           <p class="intro">Corre, esquiva obstáculos, recoge girasoles y deja tu mejor marca en la tabla global.</p>
           <div class="menu-actions"><button id="start-button" class="primary-button" type="button"><span>COMENZAR</span><b>IR</b></button><a class="special-link" href="especial.html">Ver experiencia especial</a></div>
-          <div class="device-actions" aria-label="Controles para teléfonos"><button id="orientation-button" class="secondary-button" type="button">GIRAR PARA JUGAR</button><button id="fullscreen-button" class="secondary-button" type="button">PANTALLA COMPLETA</button></div>
+          <div class="device-actions" aria-label="Controles para teléfonos"><button id="orientation-button" class="secondary-button icon-button" type="button" aria-label="Cambiar vista horizontal" aria-pressed="false" title="Cambiar vista horizontal"><img class="control-icon" src="recursos-visuales/plug-connected-icon.svg" alt="" /></button><button id="fullscreen-button" class="secondary-button icon-button" type="button" aria-label="Activar pantalla completa" title="Activar pantalla completa"><svg class="control-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5"/></svg></button></div>
           <p id="device-status" class="device-status" role="status" aria-live="polite"></p>
         </div>
         <div class="menu-characters" aria-hidden="true"><img class="mil-static" src="recursos-visuales/avatar-mil-de-pie-fijo-removebg-preview.png" alt="" /><img class="beliel" src="recursos-visuales/beliel-removebg-preview.png" alt="" /></div>
@@ -43,6 +43,6 @@
       <form id="username-form"><label for="username-input">Nombre de usuario</label><div class="input-row"><span>@</span><input id="username-input" name="username" autocomplete="username" maxlength="16" minlength="3" required placeholder="tu_nombre" /></div><label for="phrase-input">Frase secreta</label><div class="input-row"><span>Frase</span><input id="phrase-input" name="phrase" type="text" autocomplete="off" maxlength="80" minlength="8" required placeholder="mi frase secreta" /></div><p class="form-help">Solo letras minúsculas y espacios. La frase se limpia automáticamente.</p><button class="auth-submit" type="submit">CONTINUAR</button><p id="username-error" class="form-error" role="alert"></p></form>
     </dialog>
     <div id="dialog-backdrop" class="dialog-backdrop is-hidden"></div>
-    <script src="app.js?v=20260807-2" defer></script>
+    <script src="app.js?v=20260807-3" defer></script>
   </body>
 </html>

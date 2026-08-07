@@ -38,10 +38,10 @@ function encrypt(value){const iv=crypto.randomBytes(12);const cipher=crypto.crea
 function decrypt(value){const [ivText,tagText,dataText]=String(value).split('.');const decipher=crypto.createDecipheriv('aes-256-gcm',dataKey,Buffer.from(ivText,'base64url'));decipher.setAuthTag(Buffer.from(tagText,'base64url'));return Buffer.concat([decipher.update(Buffer.from(dataText,'base64url')),decipher.final()]).toString('utf8');}
 function lookupKey(value){return crypto.createHmac('sha256',dataKey).update(value.toLowerCase()).digest('hex');}
 function hydrate(row){return {id:row.id,key:row.username_key,username:decrypt(row.username_enc),score:Number(decrypt(row.score_enc)),salt:decrypt(row.salt_enc),phraseHash:decrypt(row.phrase_hash_enc),createdAt:row.created_at};}
-function allUsers(){return db.prepare('SELECT * FROM users').all().map(hydrate);}
+function allUsers(){return db.prepare('SELECT * FROM users').all().flatMap((row)=>{try{return [hydrate(row)];}catch(error){console.error('No se pudo descifrar un registro de usuario:',error.message);return [];}});}
 function findUser(username){const row=db.prepare('SELECT * FROM users WHERE username_key = ?').get(lookupKey(username));return row?hydrate(row):null;}
 function writeScore(user,score){db.prepare('UPDATE users SET score_enc = ? WHERE id = ?').run(encrypt(score),user.id);user.score=score;}
-function securityHeaders(){const headers={'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','X-Frame-Options':'DENY','Referrer-Policy':'strict-origin-when-cross-origin','Permissions-Policy':'camera=(), microphone=(), geolocation=()','Content-Security-Policy':"default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; img-src 'self' data:; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'"};if(nodeEnv==='production')headers['Strict-Transport-Security']='max-age=31536000; includeSubDomains';return headers;}
+function securityHeaders(){const headers={'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','X-Frame-Options':'DENY','Referrer-Policy':'strict-origin-when-cross-origin','Permissions-Policy':'camera=(), microphone=(), geolocation=()','Content-Security-Policy':"default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; img-src 'self' data:; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://cloudflareinsights.com https://*.cloudflareinsights.com"};if(nodeEnv==='production')headers['Strict-Transport-Security']='max-age=31536000; includeSubDomains';return headers;}
 function json(res,status,payload){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8',...securityHeaders()});res.end(JSON.stringify(payload));}
 function body(req){return new Promise((resolve,reject)=>{let raw='';req.on('data',chunk=>{raw+=chunk;if(raw.length>10000)reject(new Error('Solicitud demasiado grande'));});req.on('end',()=>{try{resolve(JSON.parse(raw||'{}'));}catch{reject(new Error('JSON inválido'));}});req.on('error',reject);});}
 function validUsername(value){return typeof value==='string'&&/^[A-Za-z0-9_]{3,16}$/.test(value);}
@@ -59,7 +59,7 @@ const server=http.createServer(async(req,res)=>{
   const url=new URL(req.url,`http://${req.headers.host||'localhost'}`);
   try{
     if(url.pathname.startsWith('/api/')&&!rateLimit(req,url)){res.setHeader('Retry-After','60');return json(res,429,{error:'Demasiadas solicitudes. Intenta de nuevo en un minuto.'});}
-    if(url.pathname==='/api/leaderboard'&&req.method==='GET')return json(res,200,{totalUsers:db.prepare('SELECT COUNT(*) AS count FROM users').get().count,entries:leaderboard()});
+    if(url.pathname==='/api/leaderboard'&&req.method==='GET'){const entries=leaderboard();return json(res,200,{totalUsers:entries.length,entries});}
     if(url.pathname==='/api/users/register'&&req.method==='POST'){
       const input=await body(req);const username=input.username?.trim();const phrase=input.phrase;
       if(!validUsername(username)||!validPhrase(phrase))return json(res,400,{error:'Usa un nombre válido y una frase de letras minúsculas separadas por espacios.'});

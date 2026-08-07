@@ -82,7 +82,9 @@ Los GIF no exponen una API fiable para detenerse en el frame actual. Al comenzar
 
 En pantallas menores de 700 px se aplica una escala de mundo de `0.62` al avatar, obstáculos y velocidad. El impulso vertical usa `930 * sqrt(0.62)` mientras la gravedad permanece en `2200`; así la altura del salto disminuye en la misma proporción que el avatar y conserva una relación jugable con los obstáculos. El HUD reduce información secundaria, la tabla pasa a una columna y las acciones se apilan. El cálculo de distancias siempre usa las dimensiones escaladas reales, no valores de escritorio reutilizados.
 
-Desde la pantalla de inicio, `GIRAR PARA JUGAR` solicita al navegador bloquear la orientación en `landscape`. Algunos navegadores móviles, especialmente los que no están en pantalla completa, rechazan esa solicitud; en ese caso se muestra una indicación para girar el dispositivo manualmente. `PANTALLA COMPLETA` usa la Fullscreen API y cambia su etiqueta para permitir salir. Ambas funciones dependen del permiso del navegador y no afectan la partida ni la identidad del jugador.
+Desde la pantalla de inicio, el control de orientación activa `body.landscape-mode`: en móviles la interfaz se redimensiona al alto disponible y rota visualmente el contenedor completo 90 grados, incluyendo menú, HUD, Canvas y obstáculos. No depende de `screen.orientation.lock` ni de permisos del dispositivo. El control de pantalla completa usa la Fullscreen API. Ambos controles son iconográficos, tienen `aria-label` y no afectan la partida ni la identidad del jugador.
+
+El endpoint de clasificación descifra cada fila de forma aislada; si una fila cifrada está dañada o pertenece a un volumen con una clave incorrecta, se registra el incidente en el servidor y se omite esa fila para evitar que toda la clasificación responda 500. La clave `BELIEL_DATA_KEY` de Dokploy debe mantenerse constante para recuperar los registros existentes. La CSP permite el beacon de Cloudflare Insights (`static.cloudflareinsights.com` y sus conexiones) sin habilitar scripts arbitrarios.
 
 ## Despliegue
 
