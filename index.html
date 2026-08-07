@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#304d3c" />
     <meta name="description" content="Beliel: runner arcade y tabla global de posiciones." />
     <link rel="icon" type="image/png" href="recursos-visuales/beliel-removebg-preview.png" />
-    <link rel="stylesheet" href="styles.css?v=20260807-5" />
+    <link rel="stylesheet" href="styles.css?v=20260807-6" />
     <title>Beliel / Runner arcade</title>
   </head>
   <body>
@@ -18,7 +18,7 @@
           <h1>Salta y<br /><em>diviértete.</em></h1>
           <p class="intro">Corre, esquiva obstáculos, recoge girasoles y deja tu mejor marca en la tabla global.</p>
           <div class="menu-actions"><button id="start-button" class="primary-button" type="button"><span>COMENZAR</span><b>IR</b></button><a class="special-link" href="especial.html">Ver experiencia especial</a></div>
-          <div class="device-actions" aria-label="Controles para teléfonos"><button id="orientation-button" class="secondary-button icon-button" type="button" aria-label="Activar vista horizontal" aria-pressed="false" title="Activar vista horizontal"><img class="control-icon" src="recursos-visuales/rotate-screen-icon.svg" alt="" /></button><button id="fullscreen-button" class="secondary-button icon-button" type="button" aria-label="Activar pantalla completa" title="Activar pantalla completa"><svg class="control-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5"/></svg></button></div>
+          <div class="device-actions" aria-label="Controles para teléfonos"><button id="orientation-button" class="secondary-button icon-button" type="button" aria-label="Activar vista horizontal" aria-pressed="false" title="Activar vista horizontal"><img class="control-icon" src="recursos-visuales/landscape-orientation-icon.svg" alt="" /></button><button id="fullscreen-button" class="secondary-button icon-button" type="button" aria-label="Activar pantalla completa" title="Activar pantalla completa"><svg class="control-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5"/></svg></button></div>
           <p id="device-status" class="device-status" role="status" aria-live="polite"></p>
         </div>
         <div class="menu-characters" aria-hidden="true"><img class="mil-static" src="recursos-visuales/avatar-mil-de-pie-fijo-removebg-preview.png" alt="" /><img class="beliel" src="recursos-visuales/beliel-removebg-preview.png" alt="" /></div>
@@ -31,7 +31,7 @@
       </section>
 
       <section id="game-screen" class="screen game-screen is-hidden" aria-label="Partida de Beliel">
-        <div class="game-hud"><div class="hud-player"><span>JUGADOR</span><strong id="hud-username">—</strong></div><div class="hud-pill"><span>PUNTOS</span><strong id="score">00000</strong></div><div class="hud-pill"><span>RITMO</span><strong id="speed-value">1.0×</strong></div><div class="hud-pill sunflower-stat"><span>GIRASOLES</span><strong id="sunflower-count">0</strong></div><div id="boost-indicator" class="hud-pill boost-pill is-hidden"><span>BOOST</span><strong id="boost-value">2.0×</strong><small id="boost-time">10s</small></div><div class="hud-pill high"><span>MEJOR</span><strong id="high-score">00000</strong></div></div>
+        <div class="game-hud"><div class="hud-player"><span>JUGADOR</span><strong id="hud-username">—</strong></div><div class="hud-pill"><span>PUNTOS</span><strong id="score">0</strong></div><div class="hud-pill"><span>RITMO</span><strong id="speed-value">1.0×</strong></div><div class="hud-pill sunflower-stat"><span>GIRASOLES</span><strong id="sunflower-count">0</strong></div><div id="boost-indicator" class="hud-pill boost-pill is-hidden"><span>BOOST</span><strong id="boost-value">2.0×</strong><small id="boost-time">10s</small></div><div class="hud-pill high"><span>MEJOR</span><strong id="high-score">0</strong></div></div>
         <canvas id="game-canvas" aria-label="Minijuego runner"></canvas><img id="player-sprite" class="player-sprite is-hidden" src="recursos-visuales/avatar-runner-rapido-1.6x.gif" alt="Mil corriendo" draggable="false" /><canvas id="player-freeze" class="player-freeze is-hidden" aria-hidden="true"></canvas>
         <div class="game-tip">ESPACIO / ↑ / TOQUE PARA SALTAR</div>
         <div id="game-over" class="game-over is-hidden"><p class="eyebrow">Partida terminada</p><h2>Buen intento, <span id="game-over-player">runner</span>.</h2><p class="result-line">Puntuación <strong id="final-score">0</strong></p><p id="score-result" class="score-result"></p><div class="overlay-actions"><button id="restart-button" class="primary-button" type="button">REINTENTAR</button><button id="menu-button" class="ghost-button" type="button">INICIO</button></div></div>
@@ -43,6 +43,6 @@
       <form id="username-form"><label for="username-input">Nombre de usuario</label><div class="input-row"><span>@</span><input id="username-input" name="username" autocomplete="username" maxlength="16" minlength="3" required placeholder="tu_nombre" /></div><label for="phrase-input">Frase secreta</label><div class="input-row"><span>Frase</span><input id="phrase-input" name="phrase" type="text" autocomplete="off" maxlength="80" minlength="8" required placeholder="mi frase secreta" /></div><p class="form-help">Solo letras minúsculas y espacios. La frase se limpia automáticamente.</p><button class="auth-submit" type="submit">CONTINUAR</button><p id="username-error" class="form-error" role="alert"></p></form>
     </dialog>
     <div id="dialog-backdrop" class="dialog-backdrop is-hidden"></div>
-    <script src="app.js?v=20260807-5" defer></script>
+    <script src="app.js?v=20260807-6" defer></script>
   </body>
 </html>

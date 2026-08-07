@@ -14,7 +14,7 @@ La portada pública reutiliza `paisaje-de-fondo-inicio.png`, `avatar-mil-de-pie-
 ### Frontend
 
 - `index.html`: estructura de portada, tabla, juego y diálogo de identidad.
-- `styles.css`: sistema visual Organic; bosque, salvia, arcilla, ocre y arena; Fraunces para titulares, DM Sans para interfaz y Space Mono para números.
+- `styles.css`: sistema visual Organic; bosque, salvia, arcilla, ocre y arena; Fraunces para titulares, DM Sans para interfaz y Space Mono solo para etiquetas técnicas.
 - `app.js`: sesión local, normalización de formularios, llamadas API, leaderboard, ciclo del juego, piso móvil en Canvas, pausas del avatar y responsive.
 - `especial.html`, `special.js`, `special.css`: superficie aislada para la experiencia de fecha especial.
 
@@ -84,7 +84,9 @@ Los GIF no exponen una API fiable para detenerse en el frame actual. Al comenzar
 
 En pantallas menores de 700 px se aplica una escala de mundo de `0.62` al avatar, obstáculos y velocidad. El impulso vertical usa `930 * sqrt(0.62)` mientras la gravedad permanece en `2200`; así la altura del salto disminuye en la misma proporción que el avatar y conserva una relación jugable con los obstáculos. El HUD reduce información secundaria, la tabla pasa a una columna y las acciones se apilan. El cálculo de distancias siempre usa las dimensiones escaladas reales, no valores de escritorio reutilizados.
 
-Desde la pantalla de inicio, el control de orientación solicita pantalla completa desde el gesto del usuario y después bloquea `screen.orientation` en `landscape`. Esta secuencia permite que el navegador móvil entregue un viewport horizontal real, por lo que menú, HUD, Canvas, suelo y obstáculos se escalan con las dimensiones nativas y no mediante una rotación CSS deformante. Al pulsarlo de nuevo se desbloquea la orientación y se sale de pantalla completa. Si el navegador no soporta ambas APIs, se muestra un aviso y no se aplica una transformación visual incorrecta. Ambos controles son iconográficos, tienen `aria-label` y no afectan la identidad del jugador.
+Desde la pantalla de inicio, el control de orientación solicita pantalla completa desde el gesto del usuario y después bloquea `screen.orientation` en `landscape`. Esta secuencia permite que el navegador móvil entregue un viewport horizontal real, por lo que menú, HUD, Canvas, suelo y obstáculos se escalan con las dimensiones nativas y no mediante una rotación CSS deformante. Al pulsarlo de nuevo se desbloquea la orientación y se sale de pantalla completa. Si el navegador no soporta ambas APIs, se muestra un aviso y no se aplica una transformación visual incorrecta. Ambos controles son iconográficos, minimalistas y tienen `aria-label`.
+
+Los controles de orientación y pantalla completa no tienen fondo ni borde; el icono de orientación usa una pantalla horizontal con flechas curvas para comunicar el cambio de forma directa. Los puntajes se muestran sin ceros de relleno, con separadores de miles según `es-EC` y una tipografía sans clara para facilitar la lectura de la clasificación.
 
 El endpoint de clasificación descifra cada fila de forma aislada; si una fila cifrada está dañada o pertenece a un volumen con una clave incorrecta, se registra el incidente en el servidor y se omite esa fila para evitar que toda la clasificación responda 500. La clave `BELIEL_DATA_KEY` de Dokploy debe mantenerse constante para recuperar los registros existentes. La CSP permite el beacon de Cloudflare Insights (`static.cloudflareinsights.com` y sus conexiones) sin habilitar scripts arbitrarios.
 
