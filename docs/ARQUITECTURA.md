@@ -7,7 +7,7 @@ Beliel tiene dos experiencias separadas:
 - `/`: vista pública. Incluye la portada, identidad del jugador, tabla global y runner.
 - `/especial.html`: vista personal. Solo muestra su contenido durante el 6 de agosto de 2026 usando la zona horaria `America/Guayaquil`. Fuera de esa fecha presenta una pantalla cerrada y no expone los diálogos.
 
-La portada pública reutiliza `paisaje-de-fondo-inicio.png`, `avatar-mil-de-pie-fijo-removebg-preview.png` y `beliel-removebg-preview.png`. El runner utiliza el GIF de carrera, el paisaje secuencial, los dos obstáculos y los girasoles.
+La portada pública reutiliza `paisaje-de-fondo-inicio.png`, `avatar-mil-de-pie-fijo-removebg-preview.png`, `beliel-removebg-preview.png` y `boton-de-inicio.png` como botón visual de comienzo. El runner utiliza el GIF de carrera, el paisaje secuencial, los dos obstáculos y los girasoles.
 
 ## Componentes
 
@@ -87,6 +87,8 @@ En pantallas menores de 700 px se aplica una escala de mundo de `0.62` al avatar
 Desde la pantalla de inicio, el control de orientación solicita pantalla completa desde el gesto del usuario y después bloquea `screen.orientation` en `landscape`. Esta secuencia permite que el navegador móvil entregue un viewport horizontal real, por lo que menú, HUD, Canvas, suelo y obstáculos se escalan con las dimensiones nativas y no mediante una rotación CSS deformante. Al pulsarlo de nuevo se desbloquea la orientación y se sale de pantalla completa. Si el navegador no soporta ambas APIs, se muestra un aviso y no se aplica una transformación visual incorrecta. Ambos controles son iconográficos, minimalistas y tienen `aria-label`.
 
 Los controles de orientación y pantalla completa no tienen fondo ni borde; el icono de orientación usa una pantalla horizontal con flechas curvas para comunicar el cambio de forma directa. Los puntajes se muestran sin ceros de relleno, con separadores de miles según `es-EC` y una tipografía sans clara para facilitar la lectura de la clasificación.
+
+El enlace a `/especial.html` se mantiene en el markup con `hidden` y solo se revela cuando la fecha local de `America/Guayaquil` es el 6 de agosto de 2026. En el resto del año no aparece texto ni botón de experiencia especial. En teléfonos, el botón visual `boton-de-inicio.png` y los controles de orientación/pantalla completa comparten la misma fila para que las acciones principales queden agrupadas.
 
 El endpoint de clasificación descifra cada fila de forma aislada; si una fila cifrada está dañada o pertenece a un volumen con una clave incorrecta, se registra el incidente en el servidor y se omite esa fila para evitar que toda la clasificación responda 500. La clave `BELIEL_DATA_KEY` de Dokploy debe mantenerse constante para recuperar los registros existentes. La CSP permite el beacon de Cloudflare Insights (`static.cloudflareinsights.com` y sus conexiones) sin habilitar scripts arbitrarios.
 
